@@ -1,0 +1,146 @@
+/*
+
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  font-family: Lato, sans-serif; }
+
+div {
+  display:flex;
+  width:100%;
+  flex-wrap:wrap;
+  border: 0.5px solid grey;
+}
+html,
+body {
+  height: 100%; }
+
+h3 {
+  font-weight: normal;
+  font-size: 1em; }
+
+p{
+  overflow: hidden;
+  white-space: nowrap;
+  width:100%;
+  height: 1.5em;
+  text-overflow:ellipsis;
+}
+
+span{
+  overflow: hidden;
+  border: 0.5px solid grey;
+  height:1.5em;
+  text-overflow:ellipsis;
+}
+
+ul {
+  width: 100%;
+  padding: 0; }
+
+li {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1px;
+  overflow: hidden; }
+
+li:hover {
+  background: #eee; }
+
+input {
+  font-family: FontAwesome;
+  font-size: 1em;
+}
+.search-container {
+  width:20%;
+}
+
+.food-name-div{
+  width:20%;
+}
+.food-data-container {
+  width:70%;
+}
+.food-data-div{
+  width:100%;
+  flex-wrap: nowrap;
+}
+
+.proximates-div {
+  width:100%;
+}
+.proximates-div span{width:14.2%;}
+.lipids-div {
+  display:none;
+}
+.lipids-div span{width:20%;}
+.minerals-div{
+  display:none;
+}
+.minerals-div span{width:14.2%;}
+.vitamin-div{
+  display:none;
+}
+.vitamin-div span{width:7.6%;}
+.others-div{
+  display:none;
+}
+.others-div span{width:100%;}
+
+.food-amount-div{
+  width:10%;
+}
+
+.fooddata-list {
+
+}
+
+.btn{
+  width:50px;
+}
+
+.sammary-graph-svg{
+  margin:auto
+}
+*/
+
+.text-food-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn{
+  font-family: FontAwesome;
+  color:#F5F5F5;
+  /*border-style: none;*/
+  background: #616161;
+  /*width:50%;*/
+}
+
+.food-name-col{
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+}
+
+table td[class*=col-], table th[class*=col-] {
+    position: static;
+    display: table-cell;
+    float: none;
+}
+
+.data-cell{
+  text-align:right;
+}
+
+.amount-input{
+  width:100%;
+  text-align:right;
+}
+
