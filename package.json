@@ -1,5 +1,5 @@
 {
-  "name": "reacttest",
+  "name": "learning-recorder",
   "version": "1.0.0",
   "description": "",
   "main": "app/server/main.js",
@@ -19,7 +19,11 @@
     "electron-prebuilt": "^1.4.13",
     "fs": "0.0.1-security",
     "json-loader": "^0.5.4",
-    "nedb": "^1.8.0"
+    "nedb": "^1.8.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0"
   },
   "dependencies": {
     "react-bootstrap": "^0.31.0",
