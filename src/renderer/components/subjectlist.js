@@ -1,13 +1,14 @@
 import React from 'react';
+
 const  IpcRenderer = require('electron').ipcRenderer;
 
-import IpcRendererWrapper from '../container/ipcrendererwrapper.js'
 import Recode from './recode.js'
 import Badges from './badges.js';
 
 import Util from '../../common/util.js'
 import { Modal,Button } from 'react-bootstrap';
 //[TODO]  separate data struture definition from components
+
 
 
 export default class SubjectList extends React.Component {
@@ -24,9 +25,8 @@ export default class SubjectList extends React.Component {
   
    }
     _getLearningData(arg){
-        let r = new IpcRendererWrapper();
-        let val = r.sendSync('mdb-select',arg);
-        
+
+        let val =  IpcRenderer.sendSync('mdb-select',arg);        
         let tags = [];
         val.forEach((x)=>{
             x.badges.forEach((y)=>{

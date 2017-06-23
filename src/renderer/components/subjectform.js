@@ -1,11 +1,10 @@
 import React from 'react';
-import IpcRendererWrapper from '../container/ipcrendererwrapper.js'
+const  IpcRenderer = require('electron').ipcRenderer;
 import Util from '../../common/util.js'
 
 
 //[TODO]  separate data struture definition from components 
 //        create data class 
-//[TODO]  change list if mdb is updated is it possible to pushed from Main Process?
 
 export default class SubjectForm extends React.Component {
     constructor(props){
@@ -17,8 +16,7 @@ export default class SubjectForm extends React.Component {
     }
     handleSubmit(e){
         e.preventDefault();
-        let r = new IpcRendererWrapper();
-        let val = r.sendSync('mdb-insert',this.state);
+        let val = IpcRenderer.sendSync('mdb-insert',this.state);
         this.setState( {value:"",history:[Util.getDateYMD()],badges:[]});       
     }
     handleChange(e){
