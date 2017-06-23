@@ -42,7 +42,7 @@ export default class SubjectList extends React.Component {
         this._getLearningData({});        
         IpcRenderer.on('mdb-insert', (e, msg) => {
             this._getLearningData({})
-            //[TODO] calling _getLearningData is not effective. 
+            //[TODO] calling _getLearningData is inefficient. 
             // edit to use msg variable.
             // this.setState(msg);  
         });

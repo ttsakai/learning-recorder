@@ -1,7 +1,6 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Comments from '../components/comments.js';
 import SubjectList from '../components/subjectlist.js';
 import SubjectForm from '../components/subjectform.js';
 
