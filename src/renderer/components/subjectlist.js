@@ -41,7 +41,10 @@ export default class SubjectList extends React.Component {
     componentDidMount(){
         this._getLearningData({});        
         IpcRenderer.on('mdb-insert', (e, msg) => {
-            this.setState(msg);  
+            this._getLearningData({})
+            //[TODO] calling _getLearningData is not effective. 
+            // edit to use msg variable.
+            // this.setState(msg);  
         });
     }
     _openModal() {
