@@ -8,16 +8,17 @@ export default class Badges extends React.Component {
         this.state = {view:false};
         this.handleClick = this.handleClick.bind(this);
     }
-    handleClick(){
-        let id = this.props.sid;
-        console.log(id);
+    handleClick(tag){
+        let tags = IpcRenderer.sendSync('mdb-delete-tag',{_id:this.props.sid,tag:[tag]});
     }
     //[TODO] listen to db update async request from main prosess 
     render(){
         // let icon = this.props.icon ;
         let icon =  <i className="fa fa-tag" aria-hidden="true"></i>;
         let badges = this.props.badges.map((x,i)=>{
-            return <span className="badge badge-pill badge-default" key={i} onClick={this.handleClick}>
+            return <span className="badge badge-pill badge-default"
+                         key={i} 
+                         onClick={()=>{this.handleClick(x)}}>
                         {icon}
                         {" "}
                         {x.value}

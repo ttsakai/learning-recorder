@@ -95,6 +95,13 @@ ipcMain.on('mdb-select-tag',(e,arg)=>{
   });
 });
 
+ipcMain.on('mdb-delete-tag',(e,arg)=>{
+  db.deleteTagById(arg._id,arg.tag,(r)=>{
+    console.log(r);
+    e.returnValue="OK";
+  });
+});
+
 
 ipcMain.on('mdb-select',(e,arg)=>{
   db.selectAll((text)=>{ 
