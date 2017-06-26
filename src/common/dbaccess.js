@@ -47,6 +47,12 @@ export default class Dbaccess{
     let fieldObj = this._pickObj(obj,field);    
     this.db.update(fieldObj,{ $set: obj },{},callback);
   }
+  updatePushById(id,obj,field='',callback){
+      let fieldObj = this._pickObj(obj,field);
+ 
+      this.db.update({_id:id},{ $addToSet: fieldObj },callback);
+      
+  }
   updatePush(obj,field='',callback){
     let fieldObj = this._pickObj(obj,field);
     Object.keys(obj).forEach(    

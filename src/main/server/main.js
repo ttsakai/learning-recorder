@@ -78,18 +78,40 @@ ipcMain.on('mdb-insert',(e,arg)=>{
   db.insertUniq(arg,'value',(err)=>{
     db.selectAll( (r)=>{
       e.returnValue = 'OK';
-      win.webContents.send('mdb-insert',r)
+      win.webContents.send('mdb-insert',r);
     });
   });
 });
 
+ipcMain.on('mdb-update-tag',(e,arg)=>{
+  db.updatePushById(arg._id,arg,'badges',(err)=>{
+    e.returnValue='OK';
+  });
+});
+
+ipcMain.on('mdb-select-tag',(e,arg)=>{
+  db.select({_id:arg._id},"",(r)=>{
+    e.returnValue=r[0].badges;
+  });
+});
+
+
 ipcMain.on('mdb-select',(e,arg)=>{
-  db.selectAll((text)=>{ e.returnValue = text});
-  // e.sender.send('mdb-update','ok');
+  db.selectAll((text)=>{ 
+    e.returnValue = text
+  });
 });
 
 ipcMain.on('mdb-badge-select',(e,arg)=>{
-  db.selectAll((text)=>{ 
-    e.returnValue = text
+  db.selectAll((text)=>{
+    let tags = []
+    text.forEach((x)=>{
+        x.badges.forEach((y)=>{
+            if (tags.indexOf(y) < 0 ) {
+                tags.push(y);
+            }
+        });
+    });
+    e.returnValue = tags
   });
 });

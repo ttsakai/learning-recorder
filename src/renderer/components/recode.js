@@ -6,7 +6,6 @@ export default class Recode extends React.Component {
     constructor(props){
         super(props);
         this.state = {modalIsOpen: false};
-
     }
     render(){        
         if ( this.props.type === 'head'){
@@ -32,7 +31,7 @@ export default class Recode extends React.Component {
                         </p>
                     </td>
                     <td className="col-4" >
-                        <Badges badges={this.props.badges}/>
+                        <Badges badges={this.props.badges} sid={this.props.sid}/>
                     </td>
                     <td className="col-2">
                         <a href="#" className="btn btn-primary btn-xs" onClick={this.props.handleClick}  >
