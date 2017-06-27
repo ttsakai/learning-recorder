@@ -84,8 +84,8 @@ ipcMain.on('mdb-insert',(e,arg)=>{
 });
 
 ipcMain.on('mdb-update-tag',(e,arg)=>{
-  db.updatePushById(arg._id,arg,'badges',(err)=>{
-    e.returnValue='OK';
+  db.updatePushById(arg._id,arg,'badges',(err,c,doc)=>{
+    e.returnValue=doc.badges;
   });
 });
 
@@ -96,9 +96,8 @@ ipcMain.on('mdb-select-tag',(e,arg)=>{
 });
 
 ipcMain.on('mdb-delete-tag',(e,arg)=>{
-  db.deleteTagById(arg._id,arg.tag,(r)=>{
-    console.log(r);
-    e.returnValue="OK";
+  db.deleteTagById(arg._id,arg.tag,(err,c,doc)=>{
+    e.returnValue=doc.badges;
   });
 });
 

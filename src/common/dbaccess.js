@@ -47,34 +47,32 @@ export default class Dbaccess{
     let fieldObj = this._pickObj(obj,field);    
     this.db.update(fieldObj,{ $set: obj },{},callback);
   }
+
+
   updatePushById(id,obj,field='',callback){
       let fieldObj = this._pickObj(obj,field);
- 
-      this.db.update({_id:id},{ $addToSet: fieldObj },callback);
+      this.db.update({_id:id},{ $addToSet: fieldObj },{ returnUpdatedDocs : true },callback);
       
   }
   deleteTagById(id,tag,callback){
-    this.db.find({_id:id},(e,doc)=>{
+    this.db.findOne({_id:id},(e,doc)=>{
   
-      let l = doc[0].badges.length;
+      let l = doc.badges.length;
 
       tag.forEach((x)=>{
         //array.indexOf() do not support object array
         let idx = -1 ;
         for ( let i  = 0 ; i < l ; i++){
-          // console.log( x , doc[0].badges[i]);
-          if ( x.value === doc[0].badges[i].value){
+          if ( x.value === doc.badges[i].value){
             idx = i;
             break
           }
         }
-        // console.log(idx);
         if ( idx >= 0) {
-          doc[0].badges.splice(idx,1);
+          doc.badges.splice(idx,1);
         }
       }); 
-      // console.log(doc[0].badges);
-      this.db.update({_id:id},doc,callback);
+      this.db.update({_id:id},doc, { returnUpdatedDocs : true },callback);
     });
   }
   updatePush(obj,field='',callback){
