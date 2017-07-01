@@ -26,14 +26,12 @@ export default class SubjectForm extends React.Component {
     render(){
         return (
             <div className='container'>
-                <form onSubmit={this.handleSubmit} >
-                    <div className='form-group row'>
-                        <div className="col-8">
-                            <input type="text" className="form-control" key='1' value={this.state.value}   onChange={this.handleChange} />
-                        </div>
-                        <div className="col-4">
-                            <input type="submit" className="btn btn-default" value="submit" />
-                        </div>
+                <form onSubmit={this.handleSubmit} className="form-inline" >
+                    <div className='form-group'>
+                        <input type="text" className="form-control" key='1' value={this.state.value}   onChange={this.handleChange} />
+                    </div>
+                    <div className='form-group'>            
+                        <input type="submit" className="btn btn-default" value="submit" />
                     </div>
                 </form>
              </div>

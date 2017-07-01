@@ -5,9 +5,9 @@ import Badges from './badges.js';
 export default class Recode extends React.Component {
     constructor(props){
         super(props);
-        // this.state = {
-        //     modalIsOpen: false,
-        // };
+        //this.props.delete
+    }
+    deleteRecode(){
 
     }
     render(){        
@@ -15,29 +15,31 @@ export default class Recode extends React.Component {
             return (
                 <tr className="row">
                     <th  className="col-2">{this.props.date}</th>
-                    <th  className="col-4 text-left">item</th>
-                    <th  className="col-5 text-left">badges</th>
-                    <th  className="col-1 text-left">operation</th> 
+                    <th  className="col-6 text-left">item</th>
+                    <th  className="col-2 text-left">operation</th> 
                 </tr>      
             );
         }else if ( this.props.type ==='body'){
             return ( 
                 <tr className="row">
-                    <td  className="col-2 data-cell">
+                    <td  className="">
                         <p className="text-left" >
                         {this.props.date}
                         </p>
                     </td>
-                    <td  className="col-4 data-cell">
+                    <td  className="">
                         <p className="text-left" >
                         {this.props.value}
                         </p>
                     </td>
-                    <td className="col-5" >
-                        <Badges sid={this.props.sid}/>
+                    <td className="text-left" >
+                        <div className="text-nowrap">
+                            <Badges sid={this.props.sid}/>
+                            <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.props.delete(this.props.sid)}}>
+                                <i className="fa fa-times" aria-hidden="true"></i>
+                            </a>
+                        </div>
                     </td>
-                    <td className="col-1">
-                     </td>
                 </tr>
                    
             );

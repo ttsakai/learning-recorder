@@ -14,7 +14,9 @@ export default class SubjectList extends React.Component {
                 // tags :[],
         };    
         this._getLearningData = this._getLearningData.bind(this);
-    }
+        this.deleteRecode = this.deleteRecode.bind(this);
+      
+ }
     _getLearningData(arg){
         let val =  IpcRenderer.sendSync('mdb-select',arg);        
         this.setState({ list : val });        
@@ -27,6 +29,10 @@ export default class SubjectList extends React.Component {
             // edit to use msg variable.
             // this.setState(msg);  
         });
+    }
+    deleteRecode(id){
+        let val =  IpcRenderer.sendSync('mdb-delete-recode',id); 
+        this._getLearningData({});
     }
     render(){
 
@@ -41,6 +47,7 @@ export default class SubjectList extends React.Component {
                                 date={Util.getDateString(date)}
                                 value={obj.value}
                                 sid={obj._id}
+                                delete={this.deleteRecode}
                         />                          
            });
         }else{
@@ -48,7 +55,7 @@ export default class SubjectList extends React.Component {
         }         
         return (
             <div className="container">
-                <table className="table table-hover" >
+                <table className="table table-hover " >
                     <thead className="thead-inverse">
                         <Recode type='head' date="last-studied" />  
                     </thead>

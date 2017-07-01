@@ -75,6 +75,10 @@ export default class Dbaccess{
       this.db.update({_id:id},doc, { returnUpdatedDocs : true },callback);
     });
   }
+  deleteRecodeById(id,callback){
+      this.db.remove({_id:id},{ returnUpdatedDocs : false },callback);
+  }
+
   updatePush(obj,field='',callback){
     let fieldObj = this._pickObj(obj,field);
     Object.keys(obj).forEach(    

@@ -101,6 +101,12 @@ ipcMain.on('mdb-delete-tag',(e,arg)=>{
   });
 });
 
+ipcMain.on('mdb-delete-recode',(e,id)=>{
+  db.deleteRecodeById(id,(err, numRemoved)=>{
+    e.returnValue="OK";
+  });
+
+});
 
 ipcMain.on('mdb-select',(e,arg)=>{
   db.selectAll((text)=>{ 

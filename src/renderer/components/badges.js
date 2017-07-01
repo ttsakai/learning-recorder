@@ -53,17 +53,20 @@ export default class Badges extends React.Component {
         });
 
         return (
-            <div className="">
+            <a href="#" className="btn btn-primary btn-xs" onClick={this._openModal}>
                 <Modal show={this.state.modalIsOpen} onHide={this._closeModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>Tag Setting</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <form onSubmit={this.handleSubmit} >
-                            <div className='form-group row'>
+                        <form onSubmit={this.handleSubmit} className="form-inline" >
+                            <div className='form-group row' >
                                 <input type="text" className="form-control" key='1' value={this.state.tagText}   onChange={this.handleChange} />
+                            </div>
+                            <div className='form-group row'>
                                 <input type="submit" className="btn btn-default" value="submit" />
                             </div>
+
                         </form>
                         <h4>Tags</h4>
                         <div>{badges}</div>
@@ -72,11 +75,9 @@ export default class Badges extends React.Component {
                         <Button onClick={this._closeModal}>Close</Button>
                     </Modal.Footer>
                 </Modal>
-                {badges}
-                <a href="#" className="btn btn-primary btn-xs" onClick={this._openModal}>
-                    <i className="fa fa-tags" aria-hidden="true"></i>
-                </a>
-            </div>
+                <i className="fa fa-tags" aria-hidden="true"></i>
+            </a>
+            
         );
     }
 }
