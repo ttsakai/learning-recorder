@@ -1,25 +1,25 @@
 import React from 'react';
 import Badges from './badges.js';
-
+import Util from '../../common/util.js'
 
 export default class Recode extends React.Component {
     constructor(props){
         super(props);
         //this.props.delete
     }
-    deleteRecode(){
+    render(){       
 
-    }
-    render(){        
         if ( this.props.type === 'head'){
             return (
                 <tr className="row">
                     <th  className="col-2">{this.props.date}</th>
-                    <th  className="col-6 text-left">item</th>
+                    <th  className="col-8 text-left">item</th>
                     <th  className="col-2 text-left">operation</th> 
                 </tr>      
             );
         }else if ( this.props.type ==='body'){
+            let color = Util.getColor(this.props.histroy); 
+
             return ( 
                 <tr className="row">
                     <td  className="">
@@ -28,7 +28,7 @@ export default class Recode extends React.Component {
                         </p>
                     </td>
                     <td  className="">
-                        <p className="text-left" >
+                        <p className="text-left" style={color}>
                         {this.props.value}
                         </p>
                     </td>

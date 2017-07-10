@@ -10,16 +10,22 @@ export default class SubjectList extends React.Component {
         super(props);
         this.state = {
                 modalIsOpen: false,
+                orgList:[],
                 list :[],
                 // tags :[],
         };    
         this._getLearningData = this._getLearningData.bind(this);
         this.deleteRecode = this.deleteRecode.bind(this);
       
- }
+    }
     _getLearningData(arg){
         let val =  IpcRenderer.sendSync('mdb-select',arg);        
-        this.setState({ list : val });        
+        this.setState({ orgList : val, list : val });        
+    }
+    filterList(callack){
+        let filteredList = this.state.orglist.filter(callback);
+        this.setState({list:filterdList});
+
     }
     componentDidMount(){
         this._getLearningData({});        
@@ -48,6 +54,7 @@ export default class SubjectList extends React.Component {
                                 value={obj.value}
                                 sid={obj._id}
                                 delete={this.deleteRecode}
+                                histroy={obj.history}
                         />                          
            });
         }else{
