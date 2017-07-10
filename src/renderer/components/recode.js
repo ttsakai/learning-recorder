@@ -35,6 +35,9 @@ export default class Recode extends React.Component {
                     <td className="text-left" >
                         <div className="text-nowrap">
                             <Badges sid={this.props.sid}/>
+                            <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.props.update(this.props.sid)}}>
+                                <i className="fa fa-check" aria-hidden="true"></i>
+                            </a>
                             <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.props.delete(this.props.sid)}}>
                                 <i className="fa fa-times" aria-hidden="true"></i>
                             </a>

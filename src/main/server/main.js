@@ -83,6 +83,16 @@ ipcMain.on('mdb-insert',(e,arg)=>{
   });
 });
 
+ipcMain.on('mdb-insert2',(e,arg)=>{
+  db.insertUniq(arg,'_id',(err)=>{
+    db.selectAll( (r)=>{
+      e.returnValue = 'OK';
+      win.webContents.send('mdb-insert',r);
+    });
+  });
+});
+
+
 ipcMain.on('mdb-update-tag',(e,arg)=>{
   db.updatePushById(arg._id,arg,'badges',(err,c,doc)=>{
     e.returnValue=doc.badges;

@@ -16,6 +16,8 @@ export default class SubjectList extends React.Component {
         };    
         this._getLearningData = this._getLearningData.bind(this);
         this.deleteRecode = this.deleteRecode.bind(this);
+        this.updateRecode = this.updateRecode.bind(this);
+      
       
     }
     _getLearningData(arg){
@@ -36,6 +38,10 @@ export default class SubjectList extends React.Component {
             // this.setState(msg);  
         });
     }
+    updateRecode(id){
+        let val = IpcRenderer.sendSync('mdb-insert2', {_id:id,history:[Util.getDateYMD()]});
+        this._getLearningData({});
+    }
     deleteRecode(id){
         let val =  IpcRenderer.sendSync('mdb-delete-recode',id); 
         this._getLearningData({});
@@ -54,7 +60,9 @@ export default class SubjectList extends React.Component {
                                 value={obj.value}
                                 sid={obj._id}
                                 delete={this.deleteRecode}
+                                update={this.updateRecode}
                                 histroy={obj.history}
+                                
                         />                          
            });
         }else{
