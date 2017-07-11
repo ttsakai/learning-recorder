@@ -1,8 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import SubjectList from '../components/subjectlist.js';
-import SubjectForm from '../components/subjectform.js';
+import Component from '../components/Component.js';
 
 // const {remote} = require('electron')
 import {remote} from 'electron';
@@ -26,9 +25,6 @@ window.addEventListener('contextmenu', (e) => {
   menu.popup(remote.getCurrentWindow())
 }, false)
 
-
-
-
 window.onload = ()=>{
   ReactDOM.render(<Container />, document.getElementById('app'));
 }
@@ -41,8 +37,7 @@ class Container extends React.Component{
 
       return  (
         <div className='container'>
-          <SubjectForm />
-          <SubjectList />
+          <Component/>
         </div>
       )
   }
