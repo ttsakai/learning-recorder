@@ -3,26 +3,30 @@ import ActionCreator from "../action/action.js"
 import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
-
+import { Modal,Button } from 'react-bootstrap';
 
 // EventEmitterのインスタンスをそれぞれ渡す
 var dispatcher = new EventEmitter();
 var action = new ActionCreator(dispatcher);
-var store = new RecodeStore(dispatcher);
+var recodeStore = new RecodeStore(dispatcher);
 
 export default class Component extends React.Component {
     constructor(props) {
         super(props);
 
         this.state =  {
-            recodes:store.getRecodes(),
-            value:""
+            recodes:recodeStore.getRecodes(),
+            value:"",
+            selectedId:"",
+            isModal:false
         };
 
-        store.on("CHANGE", () => {
+        recodeStore.on("CHANGE", () => {
             this._onChange();
         });
 
+        this._openModal = this._openModal.bind(this);
+        this._closeModal = this._closeModal.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
@@ -30,10 +34,13 @@ export default class Component extends React.Component {
 
     }
     _onChange() {
-        this.setState({recodes:store.getRecodes()});
+        this.setState({recodes:recodeStore.getRecodes()});
     }
-    tick() {
-        action.recodesChange(this.state);
+    _openModal() {
+        this.setState({isModal:true});
+    }
+    _closeModal(){
+        this.setState({isModal:false});
     }
     handleSubmit(e) {
         e.preventDefault();
@@ -105,7 +112,7 @@ export default class Component extends React.Component {
     renderRecode(_id,date,value,key){
         return ( 
             <tr className="row" key={key}>
-                <td className="">{date}</td>
+                <td className="">{Util.getDateString(Util.getDate(date))}</td>
                 <td className="">{value}</td>
                 <td className="text-left" >{this.renderOperations(_id)}</td>
             </tr>
@@ -114,6 +121,10 @@ export default class Component extends React.Component {
     renderOperations(id){
         return (
             <div className="text-nowrap">
+                <a href="#" className="btn btn-primary btn-xs" onClick={this._openModal}>
+                    <i className="fa fa-tags" aria-hidden="true"></i>
+                    {this.renderModal()}
+                </a>
                 <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleUpdate(id)}}>
                     <i className="fa fa-check" aria-hidden="true"></i>
                 </a>
@@ -121,7 +132,25 @@ export default class Component extends React.Component {
                     <i className="fa fa-times" aria-hidden="true"></i>
                 </a>
             </div>
-
         );
+    }
+    renderModal(child){
+        return (
+            <Modal show={this.state.isModal} onHide={this._closeModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Tag Setting</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {child}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this._closeModal}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+    renderTagForm(id){
+        //[TODO] get tags for ids and render them as badges
+        // need to have independent store?
     }
 }
