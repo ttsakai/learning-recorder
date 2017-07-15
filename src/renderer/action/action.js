@@ -8,9 +8,13 @@ export default class ActionCreator {
     recodeInsert(data) {
         this.dispatcher.emit("recodeInsert", data);
     }
-    recodeUpdate(data) {
-        this.dispatcher.emit("recodeUpdate", data);
+    recodeHistoryInsert(data) {
+        this.dispatcher.emit("recodeHistoryInsert", data);
     }
+    recodeTagInsert(data,tag) {
+        this.dispatcher.emit("recodeTagInsert", data,tag);
+    }
+
     recodeDelete(data) {
         this.dispatcher.emit("recodeDelete", data);
     }

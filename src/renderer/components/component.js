@@ -4,80 +4,73 @@ import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
 import { Modal,Button } from 'react-bootstrap';
-
+import Form from './form.js'
 // EventEmitterのインスタンスをそれぞれ渡す
-var dispatcher = new EventEmitter();
-var action = new ActionCreator(dispatcher);
-var recodeStore = new RecodeStore(dispatcher);
+let dispatcher = new EventEmitter();
+let action = new ActionCreator(dispatcher);
+let store = new RecodeStore(dispatcher);
 
 export default class Component extends React.Component {
     constructor(props) {
         super(props);
 
         this.state =  {
-            recodes:recodeStore.getRecodes(),
-            value:"",
-            selectedId:"",
-            isModal:false
+            isModal:false,
+            recodes:store.getRecodes(),
         };
 
-        recodeStore.on("CHANGE", () => {
-            this._onChange();
+        store.on("CHANGE", () => {
+            this._onStoreChange();
         });
-
         this._openModal = this._openModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleUpdate = this.handleUpdate.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleHistoryInsert = this.handleHistoryInsert.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-
     }
-    _onChange() {
-        this.setState({recodes:recodeStore.getRecodes()});
+    _onStoreChange() {
+        this.setState({recodes:store.getRecodes()});
     }
-    _openModal() {
-        this.setState({isModal:true});
+    _openModal(recode) {
+        if ( recode !== undefined){
+            this.setState({isModal:true});
+        }else{
+            this.setState({isModal:true});
+        }
     }
     _closeModal(){
         this.setState({isModal:false});
     }
-    handleSubmit(e) {
-        e.preventDefault();
-        action.recordeInsert(this.state.value);
-        this.setState({value:""});
+    handleClick(recode){
     }
-    handleChange(e){
-        e.preventDefault();
-        this.setState({value:e.target.value});
+    handleHistoryInsert(recode){
+        action.recodeHistoryInsert(recode);
     }
-    handleUpdate(id){
-        action.recodeUpdate(id);
-    }
-    handleDelete(id){
-        action.recodeDelete(id);
+    handleDelete(recode){
+        action.recodeDelete(recode);
     }
     render(){
         return (
             <div>
-            {this.renderForm()}
+            {/*<Form store={recodeStore}/>*/}
+            {this.renderModal("hoge",(<Form store={store}/>),"hoge")}
             {this.renderTable()}    
             </div>
         );
-
     }
-    renderForm(){
+    renderModal(title,body,footer){
         return (
-            <div className='container'>
-                <form onSubmit={this.handleSubmit} className="form-inline" >
-                    <div className='form-group'>
-                        <input type="text" className="form-control" key='1' value={this.state.value}   onChange={this.handleChange} />
-                    </div>
-                    <div className='form-group'>            
-                        <input type="submit" className="btn btn-default" value="submit" />
-                    </div>
-                </form>
-             </div>
+            <a href="#" className="btn btn-primary btn-xs" onClick={(e)=>{this._openModal()}}>
+                <Modal show={this.state.isModal} onHide={this._closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{body}</Modal.Body>
+                    <Modal.Footer>{footer}
+                    </Modal.Footer>
+                </Modal>
+                <i className="fa fa-tags" aria-hidden="true"></i>
+            </a>
         );
     }
     renderTable(){
@@ -105,52 +98,30 @@ export default class Component extends React.Component {
     }
     renderTBody(){            
         return this.state.recodes.map((x,i)=>{
-            return this.renderRecode(x._id,x.history[x.history.length -1 ],x.value,i);
+            return this.renderRecode(x,i);
         });
         
     }
-    renderRecode(_id,date,value,key){
+    renderRecode(recode,idx){
         return ( 
-            <tr className="row" key={key}>
-                <td className="">{Util.getDateString(Util.getDate(date))}</td>
-                <td className="">{value}</td>
-                <td className="text-left" >{this.renderOperations(_id)}</td>
+            <tr className="row" key={idx}>
+                <td className="">{Util.getDateString(Util.getDate(recode.history[recode.history.length - 1]))}</td>
+                <td className="" >{recode.value}</td>
+                {/*<td className="" onClick={()=>{this._openModal(recode)}}>{recode.value}</td>*/}
+                <td className="text-left" >{this.renderOperations(recode)}</td>
             </tr>
         );
     }
-    renderOperations(id){
+    renderOperations(recode){
         return (
             <div className="text-nowrap">
-                <a href="#" className="btn btn-primary btn-xs" onClick={this._openModal}>
-                    <i className="fa fa-tags" aria-hidden="true"></i>
-                    {this.renderModal()}
-                </a>
-                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleUpdate(id)}}>
+                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleHistoryInsert(recode)}}>
                     <i className="fa fa-check" aria-hidden="true"></i>
                 </a>
-                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleDelete(id)}}>
+                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleDelete(recode)}}>
                     <i className="fa fa-times" aria-hidden="true"></i>
                 </a>
             </div>
         );
-    }
-    renderModal(child){
-        return (
-            <Modal show={this.state.isModal} onHide={this._closeModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Tag Setting</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {child}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this._closeModal}>Close</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-    renderTagForm(id){
-        //[TODO] get tags for ids and render them as badges
-        // need to have independent store?
     }
 }
