@@ -12,8 +12,7 @@ export default class Store extends Emitter {
         dispatcher.on("recodeInsert", this.onRecodeInsert.bind(this));
         dispatcher.on("recodeDelete", this.onRecodeDelete.bind(this));
         dispatcher.on("recodeHistoryInsert", this.onRecodeHistoryInsert.bind(this));
-        dispatcher.on("recodeTagInsert", this.onRecodeTagInsert.bind(this));
-        
+
     }
     _getBaseRecode(){
         return {_id:"",value:"",history:[],tags:[]};
@@ -40,10 +39,6 @@ export default class Store extends Emitter {
         let val = IpcRenderer.sendSync('mdb-insert2', {_id:recode._id,history:[Util.getDateYMD()]});
         this.recodes = this._getStorageData({});
         this.emit("CHANGE");
-    }
-    onRecodeTagInsert(recode,tag){
-        console.log(recode,tag);
-        // this.emit("CHANGE");
     }
     onRecodeDelete(recode){
         let val = IpcRenderer.sendSync('mdb-delete-recode',recode._id);

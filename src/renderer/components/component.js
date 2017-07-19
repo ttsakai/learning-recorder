@@ -4,11 +4,133 @@ import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
 import { Modal,Button } from 'react-bootstrap';
-import Form from './form.js'
-// EventEmitterのインスタンスをそれぞれ渡す
+
 let dispatcher = new EventEmitter();
 let action = new ActionCreator(dispatcher);
 let store = new RecodeStore(dispatcher);
+
+
+class Tag extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return ( 
+            <span  onClick={()=>{this.props.onClick(this.props.value)}}  className="badge badge-pill badge-default" >
+                <i aria-hidden="true" className="fa fa-tag" ></i>
+                {" " + this.props.value}
+            </span>
+        );
+    }
+}
+
+class History extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return ( 
+            <span className="badge badge-pill badge-default"  >
+                {Util.getDateString(Util.getDate(this.props.date))}
+            </span>
+        );
+    }
+}
+
+class TagInput extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {value:""};
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+
+    }
+    handleChange(e){
+        e.preventDefault();
+        this.setState({value:e.target.value});
+    }
+    handleClick(e){
+        e.preventDefault();
+        this.props.onClick(this.state.value);
+        this.setState({value:""});
+    }
+    render(){
+        return (
+            <div>
+                <input type="text" value={this.state.value} onChange={this.handleChange} className="form-control" />
+                <button onClick={this.handleClick} className="btn btn-default" >Add tag</button>
+            </div>
+        );
+     }   
+};
+
+class Form extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = this._getFormData();    
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.tagUpdate = this.tagUpdate.bind(this);
+        this.tagDelete = this.tagDelete.bind(this);
+        
+    }
+    _getFormData(){
+        return store.getFormData();
+    }
+    handleSubmit(e) {
+        e.preventDefault();
+        action.recordeInsert(this.state);
+        this.setState(this._getFormData());
+    }
+    handleChange(e){
+        e.preventDefault();
+        this.setState({value:e.target.value});
+    }
+    tagUpdate(tag){
+        this.setState((s) => ({ tags: s.tags.concat({value:tag}) }));       
+    }
+    tagDelete(tag){
+        this.setState({tags: this.state.tags.filter((v)=> { 
+            return v.value  !== tag ;
+        })});
+    }
+    render(){   
+        let tags = this.state.tags.map((x,i)=>{
+            return <Tag value={x.value} key={i} onClick={this.tagDelete}/>;
+        }); 
+        let history = this.state.history.map((x,i)=>{
+            return  <History date={x} key={i}/>
+        }); 
+        
+        return (
+            <form onSubmit={this.handleSubmit} className="form-inline" >
+                <div className='form-group'>
+                    <label>Subject</label>
+                    <input type="text" className="form-control"  value={this.state.value}   onChange={this.handleChange} />
+                </div>
+                <div className='form-group'>
+                    <label>History</label>
+                    {history}
+                </div>
+                <div className='form-group'>
+                    <label>Tags</label>
+                    <TagInput onClick={this.tagUpdate}/>
+                    {tags}
+                </div>
+                <div className='form-group'>
+                    <input type="submit" className="btn btn-default"  onSubmit={this.handleSubmit} value="Save" />
+                </div>                    
+            </form>
+
+        );
+    }
+
+};
+
+
+
 
 export default class Component extends React.Component {
     constructor(props) {
@@ -53,7 +175,7 @@ export default class Component extends React.Component {
         return (
             <div>
             {/*<Form store={recodeStore}/>*/}
-            {this.renderModal("hoge",(<Form store={store}/>),"hoge")}
+            {this.renderModal("hoge",(<Form/>),"hoge")}
             {this.renderTable()}    
             </div>
         );

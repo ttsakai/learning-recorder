@@ -117,9 +117,16 @@ input {
 .btn{
   font-family: FontAwesome;
   color:#F5F5F5;
-  /*border-style: none;*/
   background: #616161;
-  /*width:50%;*/
+}
+.btn:not( :hover ){   
+  font-family: FontAwesome;
+  color:#F5F5F5;
+  background: #616161;
+}
+
+.btn:focus {
+  outline: none;
 }
 
 .food-name-col{
@@ -143,4 +150,3 @@ table td[class*=col-], table th[class*=col-] {
   width:100%;
   text-align:right;
 }
-
