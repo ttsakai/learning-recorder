@@ -83,35 +83,14 @@ ipcMain.on('mdb-insert',(e,arg)=>{
   });
 });
 
-ipcMain.on('mdb-insert2',(e,arg)=>{
-  db.insertUniq(arg,'_id',(err)=>{
-    db.selectAll( (r)=>{
-      e.returnValue = 'OK';
-      win.webContents.send('mdb-insert',r);
-    });
+ipcMain.on('mdb-upsert',(e,arg)=>{
+  db.upsert(arg,(err)=>{
+    console.log(err);   
+    e.returnValue = 'OK';
   });
 });
 
-
-ipcMain.on('mdb-update-tag',(e,arg)=>{
-  db.updatePushById(arg._id,arg,'badges',(err,c,doc)=>{
-    e.returnValue=doc.badges;
-  });
-});
-
-ipcMain.on('mdb-select-tag',(e,arg)=>{
-  db.select({_id:arg._id},"",(r)=>{
-    e.returnValue=r[0].badges;
-  });
-});
-
-ipcMain.on('mdb-delete-tag',(e,arg)=>{
-  db.deleteTagById(arg._id,arg.tag,(err,c,doc)=>{
-    e.returnValue=doc.badges;
-  });
-});
-
-ipcMain.on('mdb-delete-recode',(e,id)=>{
+ipcMain.on('mdb-delete',(e,id)=>{
   db.deleteRecodeById(id,(err, numRemoved)=>{
     e.returnValue="OK";
   });
@@ -119,21 +98,7 @@ ipcMain.on('mdb-delete-recode',(e,id)=>{
 });
 
 ipcMain.on('mdb-select',(e,arg)=>{
-  db.selectAll((text)=>{ 
-    e.returnValue = text
-  });
-});
-
-ipcMain.on('mdb-badge-select',(e,arg)=>{
-  db.selectAll((text)=>{
-    let tags = []
-    text.forEach((x)=>{
-        x.badges.forEach((y)=>{
-            if (tags.indexOf(y) < 0 ) {
-                tags.push(y);
-            }
-        });
-    });
-    e.returnValue = tags
+  db.selectAll((err,doc)=>{
+    e.returnValue = doc;
   });
 });

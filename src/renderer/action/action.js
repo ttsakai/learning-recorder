@@ -1,17 +1,26 @@
+'use strict'
+const  IpcRenderer = require('electron').ipcRenderer;
+import Util from '../../common/util.js'
+
 export default class ActionCreator {
     constructor(dispatcher) {
         this.dispatcher = dispatcher;
     }
-    recodesChange(data) {
-        this.dispatcher.emit("recodesChange", data);
+     _getStorageData(arg){
+        return  IpcRenderer.sendSync('mdb-select',arg);        
     }
-    recodeInsert(data) {
-        this.dispatcher.emit("recodeInsert", data);
+    saveRecode(data) {
+        console.log("action:saveRecode",data);
+        let val = IpcRenderer.sendSync('mdb-upsert',data);
+        let recodes = this._getStorageData({});     
+        this.dispatcher.emit("saveRecode", recodes);
     }
-    recodeHistoryInsert(data) {
-        this.dispatcher.emit("recodeHistoryInsert", data);
+    deleteRecode(data) {
+        let val = IpcRenderer.sendSync('mdb-delete',data._id);
+        let recodes = this._getStorageData({});     
+        this.dispatcher.emit("deleteRecode", recodes);
     }
-    recodeDelete(data) {
-        this.dispatcher.emit("recodeDelete", data);
+    setForm(data){
+      this.dispatcher.emit("setForm", data);
     }
 }

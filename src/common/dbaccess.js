@@ -8,6 +8,14 @@ export default class Dbaccess{
       autoload: true
     }); 
   }
+  upsert(obj,callback){
+    if ( obj._id === ""){
+      this.db.insert({value:obj.value,tags:obj.tags,history:obj.history},callback);
+    }else{
+      console.log("update",obj);
+      this.db.update({_id:obj._id},{ $set: obj },{},callback);
+    }
+  }
   _pickObj(obj,field){
     let rVal = {};
     if ( field !== '' ){ 
@@ -24,7 +32,7 @@ export default class Dbaccess{
     });
   }
   selectAll(callback){
-    this.select({},'',callback);
+    this.db.find({},callback);
   }
   count(obj={},field='',callback){
     let countKeyObj = this._pickObj(obj,field);

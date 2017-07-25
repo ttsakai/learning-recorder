@@ -8,41 +8,35 @@ export default class Store extends Emitter {
         super();
         this.recodes = this._getStorageData({});
         this.formData = this._getBaseRecode();
-        dispatcher.on("recodesChange", this.onRecodesChange.bind(this));
-        dispatcher.on("recodeInsert", this.onRecodeInsert.bind(this));
-        dispatcher.on("recodeDelete", this.onRecodeDelete.bind(this));
-        dispatcher.on("recodeHistoryInsert", this.onRecodeHistoryInsert.bind(this));
-
+        // dispatcher.on("saveRecode", this.onSaveRecode.bind(this));
+        // dispatcher.on("deleteRecode", this.onDeleteRecode.bind(this));
+        dispatcher.on("saveRecode", this.onChangeRecodes.bind(this));
+        dispatcher.on("deleteRecode", this.onChangeRecodes.bind(this));
+     
+        dispatcher.on("setForm", this.onSetForm.bind(this));
+     
     }
     _getBaseRecode(){
-        return {_id:"",value:"",history:[],tags:[]};
+        return {_id:"",value:"",history:[Util.getDateString()],tags:[]};
     }
     _getStorageData(arg){
         return  IpcRenderer.sendSync('mdb-select',arg);        
     }
-    getFormData(){
-        return this.formData;
-    }
     getRecodes(){
         return this.recodes;
     }
-    onRecodesChange(recodes) {
-        this.recodes = this._getStorageData({});
-        this.emit("CHANGE");    
-    }
-    onRecodeInsert(string) {
-        let obj = {value:string,history:[Util.getDateYMD()]}
-        let val = IpcRenderer.sendSync('mdb-insert',obj);
-        this.emit("CHANGE");    
-    }
-    onRecodeHistoryInsert(recode){
-        let val = IpcRenderer.sendSync('mdb-insert2', {_id:recode._id,history:[Util.getDateYMD()]});
-        this.recodes = this._getStorageData({});
+    onChangeRecodes(recodes){
+        this.recodes = recodes;
+        this.formData = this._getBaseRecode();
         this.emit("CHANGE");
-    }
-    onRecodeDelete(recode){
-        let val = IpcRenderer.sendSync('mdb-delete-recode',recode._id);
-        this.recodes = this._getStorageData({});
-        this.emit("CHANGE");
+
+    }    
+    onSetForm(recode){
+        if ( JSON.stringify(recode) === JSON.stringify({})){
+            this.formData = this._getBaseRecode();
+        }else{
+            this.formData = recode;
+        }
+        this.emit("FORMCHANGE");
     }
 }

@@ -4,3 +4,4 @@
 app/public/bundle.js
 app/server/main.js
 app/public/css/font-awesome-4.7.0/
+src/sandbox/**

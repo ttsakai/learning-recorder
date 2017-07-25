@@ -9,14 +9,13 @@ let dispatcher = new EventEmitter();
 let action = new ActionCreator(dispatcher);
 let store = new RecodeStore(dispatcher);
 
-
 class Tag extends React.Component{
     constructor(props){
         super(props);
     }
     render(){
         return ( 
-            <span  onClick={()=>{this.props.onClick(this.props.value)}}  className="badge badge-pill badge-default" >
+            <span  onClick={()=>{this.props.onClick(this.props.value)}}  className="badge badge-default" >
                 <i aria-hidden="true" className="fa fa-tag" ></i>
                 {" " + this.props.value}
             </span>
@@ -57,193 +56,282 @@ class TagInput extends React.Component {
     }
     render(){
         return (
-            <div>
+            <div className="input-group">
                 <input type="text" value={this.state.value} onChange={this.handleChange} className="form-control" />
-                <button onClick={this.handleClick} className="btn btn-default" >Add tag</button>
+                <span className="input-group-btn">
+                    <button onClick={this.handleClick} className="btn btn-secondary" >Add tag</button>
+                </span>
             </div>
         );
      }   
 };
 
-class Form extends React.Component {
+class HistoryInput extends React.Component {
     constructor(props){
         super(props);
-        this.state = this._getFormData();    
+        this.state = {value:Util.getDateString()};
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.tagUpdate = this.tagUpdate.bind(this);
-        this.tagDelete = this.tagDelete.bind(this);
-        
+        this._handleChange = this._handleChange.bind(this);
+        this._handleClick = this._handleClick.bind(this);
+
     }
-    _getFormData(){
-        return store.getFormData();
-    }
-    handleSubmit(e) {
-        e.preventDefault();
-        action.recordeInsert(this.state);
-        this.setState(this._getFormData());
-    }
-    handleChange(e){
+    _handleChange(e){
         e.preventDefault();
         this.setState({value:e.target.value});
     }
-    tagUpdate(tag){
-        this.setState((s) => ({ tags: s.tags.concat({value:tag}) }));       
+    _handleClick(e){
+        e.preventDefault();
+        this.props.onClick(this.state.value);
+        this.setState({value:Util.getDateString()});
     }
-    tagDelete(tag){
+    render(){
+        return (
+            <div className="input-group">
+                <input type="date" value={this.state.value} onChange={this._handleChange} className="form-control" />
+                <span className="input-group-btn">
+                    <button onClick={this._handleClick} className="btn btn-secondary" >Add History</button>
+                </span>
+            </div>
+        );
+     }   
+};
+
+
+
+
+
+class Navbar extends React.Component{
+    constructor(props) {
+        super(props);
+    }
+    render(){
+        return (
+            <nav className="navbar navbar-default navbar-static-top">
+                <div className="navbar-header pull-left">
+                    <a className="navbar-brand" href="#">{this.props.title}</a>
+                </div>
+                {this.props.btn}
+            </nav>
+        )   
+    }
+}
+
+
+class Form extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = store.formData;    
+        
+        this._handleChange = this._handleChange.bind(this);
+        this._handleSubmit = this._handleSubmit.bind(this);
+        this._addTag = this._addTag.bind(this);
+        this._deleteTag = this._deleteTag.bind(this);  
+        this._addHistory = this._addHistory.bind(this);
+              
+    }
+    _handleSubmit(e) {
+        e.preventDefault();
+        action.saveRecode(this.state);
+    }
+    _handleChange(e){
+        e.preventDefault();
+        this.setState({value:e.target.value});
+    }
+    _addHistory(history){
+        if ( this.state.history.indexOf(history) >= 0){
+            alert(history + " is already exist.");
+        }else{
+            this.setState((s) => ({ history: s.history.concat(history) }));       
+        }
+        // console.log(history,typeof history);
+    }
+
+    _addTag(tag){
+        let tagTrimed = tag.trim();
+        let flg = 0;
+
+        if ( tagTrimed === "" || tagTrimed === "undefined"){
+            return false;
+        }
+
+        this.state.tags.forEach((v,i)=>{
+            if ( v.value === tagTrimed ){
+                flg = 1;
+            }
+        });
+        
+        if ( flg ){
+            alert(tagTrimed + " is already exist.");
+        }
+        else{
+            this.setState((s) => ({ tags: s.tags.concat({value:tagTrimed}) }));       
+        }
+    }
+    _deleteTag(tag){
         this.setState({tags: this.state.tags.filter((v)=> { 
             return v.value  !== tag ;
         })});
     }
     render(){   
         let tags = this.state.tags.map((x,i)=>{
-            return <Tag value={x.value} key={i} onClick={this.tagDelete}/>;
+            return <Tag value={x.value} key={i} onClick={this._deleteTag}/>;
         }); 
         let history = this.state.history.map((x,i)=>{
             return  <History date={x} key={i}/>
         }); 
         
         return (
-            <form onSubmit={this.handleSubmit} className="form-inline" >
+            <form onSubmit={this._handleSubmit} >
                 <div className='form-group'>
                     <label>Subject</label>
-                    <input type="text" className="form-control"  value={this.state.value}   onChange={this.handleChange} />
+                    <input type="text" className="form-control mx-sm-3"  value={this.state.value}   onChange={this._handleChange} />
                 </div>
                 <div className='form-group'>
-                    <label>History</label>
-                    {history}
+                   <label>History</label>
+                    <HistoryInput onClick={this._addHistory}/>
+                  <div>{history}</div>
                 </div>
                 <div className='form-group'>
                     <label>Tags</label>
-                    <TagInput onClick={this.tagUpdate}/>
-                    {tags}
+                    <TagInput onClick={this._addTag}/>
+                    <div>{tags}</div>
                 </div>
                 <div className='form-group'>
-                    <input type="submit" className="btn btn-default"  onSubmit={this.handleSubmit} value="Save" />
+                    <input type="submit" className="btn btn-default"  value="Save" />
                 </div>                    
             </form>
 
         );
     }
-
 };
 
 
+class Modalwindow extends React.Component{
+    constructor(props){
+        super(props);
+        this.state =  {
+            isModal:false
+        };
+        store.on("FORMCHANGE",(err)=>{
+            this.setState({isModal:true});
+        });
 
+        this._openModal = this._openModal.bind(this);
+        this._closeModal = this._closeModal.bind(this);
+
+    }
+    _openModal() {
+        this.setState({isModal:true});
+    }
+    _closeModal(){
+        this.setState({isModal:false});
+    }
+    render(){
+        return (
+            <button type="button" onClick={(e)=>{
+                action.setForm({});
+                this._openModal();
+             
+                }
+            }  className="btn btn-default navbar-btn pull-right" >
+                <i className="fa fa-plus" aria-hidden="true" >
+                    <Modal show={this.state.isModal} onHide={this._closeModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title></Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        {this.props.body} 
+                        </Modal.Body>
+                        <Modal.Footer></Modal.Footer>
+                    </Modal>
+                </i>
+            </button>
+
+        );
+    }
+}
+
+
+class Recode extends React.Component{
+    constructor(props){
+        super(props);
+
+    }
+    render(){
+        let recode = this.props.recode;
+        let date = Util.getDate(recode.history[recode.history.length - 1]);
+        let dateString = Util.getDateString(date);
+        return ( 
+            <tr className="row" >
+                <td className="">{dateString}</td>
+                <td className="" >{recode.value}</td>
+                <td className="text-left" >
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
+                            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
+                            <i className="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                    </div> 
+                </td>
+            </tr>
+        );
+    }
+}
+class DataTable extends React.Component{
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        return (
+            <div className="container">
+                <table className="table table-hover " >
+                    <thead className="thead-inverse">
+                        <tr className="row">
+                            <th  className="col-2">date</th>
+                            <th  className="col-8 text-left">item</th>
+                            <th  className="col-2 text-left">operation</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {       
+                         this.props.recodes.map((x,i)=>{
+                            return  <Recode key={i} recode={x} />
+                         })  
+                    }
+                    </tbody>
+                </table>
+            </div>
+        );
+    }    
+}
 
 export default class Component extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state =  {
-            isModal:false,
-            recodes:store.getRecodes(),
-        };
-
-        store.on("CHANGE", () => {
-            this._onStoreChange();
+        this.state = {recodes:store.recodes};
+        store.on("CHANGE",(err)=>{
+            this.setState({recodes:store.recodes});
         });
-        this._openModal = this._openModal.bind(this);
-        this._closeModal = this._closeModal.bind(this);
-        this.handleClick = this.handleClick.bind(this);
-        this.handleHistoryInsert = this.handleHistoryInsert.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
-    }
-    _onStoreChange() {
-        this.setState({recodes:store.getRecodes()});
-    }
-    _openModal(recode) {
-        if ( recode !== undefined){
-            this.setState({isModal:true});
-        }else{
-            this.setState({isModal:true});
-        }
-    }
-    _closeModal(){
-        this.setState({isModal:false});
-    }
-    handleClick(recode){
-    }
-    handleHistoryInsert(recode){
-        action.recodeHistoryInsert(recode);
-    }
-    handleDelete(recode){
-        action.recodeDelete(recode);
+        
     }
     render(){
         return (
             <div>
-            {/*<Form store={recodeStore}/>*/}
-            {this.renderModal("hoge",(<Form/>),"hoge")}
-            {this.renderTable()}    
+                <Navbar title="Lerning Recorder" btn={<Modalwindow body={<Form/>}/>}/>
+                <DataTable recodes={this.state.recodes}/>
             </div>
-        );
-    }
-    renderModal(title,body,footer){
-        return (
-            <a href="#" className="btn btn-primary btn-xs" onClick={(e)=>{this._openModal()}}>
-                <Modal show={this.state.isModal} onHide={this._closeModal}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>{title}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{body}</Modal.Body>
-                    <Modal.Footer>{footer}
-                    </Modal.Footer>
-                </Modal>
-                <i className="fa fa-tags" aria-hidden="true"></i>
-            </a>
-        );
-    }
-    renderTable(){
-         return (
-            <div className="container">
-                <table className="table table-hover " >
-                    <thead className="thead-inverse">
-                    {this.renderTHeader()}
-                    </thead>
-                    <tbody >
-                    {this.renderTBody()}
-                    </tbody>
-                </table>
-            </div>
-        );
-    }
-    renderTHeader(){
-        return (
-            <tr className="row">
-                <th  className="col-2">date</th>
-                <th  className="col-8 text-left">item</th>
-                <th  className="col-2 text-left">operation</th> 
-            </tr>      
         );
     }
     renderTBody(){            
+        // return store.recodes.map((x,i)=>{
         return this.state.recodes.map((x,i)=>{
             return this.renderRecode(x,i);
         });
         
     }
-    renderRecode(recode,idx){
-        return ( 
-            <tr className="row" key={idx}>
-                <td className="">{Util.getDateString(Util.getDate(recode.history[recode.history.length - 1]))}</td>
-                <td className="" >{recode.value}</td>
-                {/*<td className="" onClick={()=>{this._openModal(recode)}}>{recode.value}</td>*/}
-                <td className="text-left" >{this.renderOperations(recode)}</td>
-            </tr>
-        );
-    }
-    renderOperations(recode){
-        return (
-            <div className="text-nowrap">
-                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleHistoryInsert(recode)}}>
-                    <i className="fa fa-check" aria-hidden="true"></i>
-                </a>
-                <a href="#" className="btn btn-primary btn-xs" onClick={()=>{this.handleDelete(recode)}}>
-                    <i className="fa fa-times" aria-hidden="true"></i>
-                </a>
-            </div>
-        );
-    }
+
 }
