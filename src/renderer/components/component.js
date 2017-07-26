@@ -25,12 +25,14 @@ class Tag extends React.Component{
 
 class History extends React.Component{
     constructor(props){
-        super(props);
+        super(props);        
     }
     render(){
+        // [TODO] statement below was in constructor. that didn't work as expected need research how counstructor and render work 
+        this.dateString = Util.getDateString(Util.getDate(this.props.date))
         return ( 
-            <span className="badge badge-pill badge-default"  >
-                {Util.getDateString(Util.getDate(this.props.date))}
+            <span onClick={()=>{this.props.onClick(this.dateString)}} className="badge badge-pill badge-default"  >
+                {this.dateString}
             </span>
         );
     }
@@ -127,6 +129,7 @@ class Form extends React.Component {
         this._addTag = this._addTag.bind(this);
         this._deleteTag = this._deleteTag.bind(this);  
         this._addHistory = this._addHistory.bind(this);
+        this._deleteHistory = this._deleteHistory.bind(this);
               
     }
     _handleSubmit(e) {
@@ -141,11 +144,17 @@ class Form extends React.Component {
         if ( this.state.history.indexOf(history) >= 0){
             alert(history + " is already exist.");
         }else{
-            this.setState((s) => ({ history: s.history.concat(history) }));       
+            let newHist = this.state.history.concat(history).sort();
+            // console.log(newHist);
+            this.setState({ history: newHist });       
         }
         // console.log(history,typeof history);
     }
-
+    _deleteHistory(history){
+        this.setState({history: this.state.history.filter((v)=> { 
+            return v  !== history ;
+        })});
+    }
     _addTag(tag){
         let tagTrimed = tag.trim();
         let flg = 0;
@@ -177,9 +186,9 @@ class Form extends React.Component {
             return <Tag value={x.value} key={i} onClick={this._deleteTag}/>;
         }); 
         let history = this.state.history.map((x,i)=>{
-            return  <History date={x} key={i}/>
+            return  <History date={x} key={i} onClick={this._deleteHistory}/>;
         }); 
-        
+        // console.log(history);
         return (
             <form onSubmit={this._handleSubmit} >
                 <div className='form-group'>
