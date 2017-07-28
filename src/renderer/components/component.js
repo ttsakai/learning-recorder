@@ -4,6 +4,9 @@ import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
 import { Modal,Button } from 'react-bootstrap';
+import Transition from 'react-transition-group/Transition';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import CSSTransition from  'react-transition-group/CSSTransition';
 
 let dispatcher = new EventEmitter();
 let action = new ActionCreator(dispatcher);
@@ -112,7 +115,7 @@ class Navbar extends React.Component{
                 <div className="navbar-header pull-left">
                     <a className="navbar-brand" href="#">{this.props.title}</a>
                 </div>
-                {this.props.btn}
+                {this.props.body}
             </nav>
         )   
     }
@@ -214,6 +217,24 @@ class Form extends React.Component {
     }
 };
 
+class DateFilter extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+
+    }
+}
+
+class TagFilter extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+
+    }
+}
+
 
 class Modalwindow extends React.Component{
     constructor(props){
@@ -271,20 +292,27 @@ class Recode extends React.Component{
         let date = Util.getDate(recode.history[recode.history.length - 1]);
         let dateString = Util.getDateString(date);
         return ( 
-            <tr className="row" >
-                <td className="">{dateString}</td>
-                <td className="" >{recode.value}</td>
-                <td className="text-left" >
-                    <div className="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
-                            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
-                            <i className="fa fa-times" aria-hidden="true"></i>
-                        </button>
-                    </div> 
-                </td>
-            </tr>
+                 <div className="row"> 
+                    <div className="col-xs-2">
+                        <span>{dateString}</span>
+                    </div>
+                    <div className="col-xs-6">
+                        <span>{recode.value}</span>
+                    </div>
+                    <div className="col-xs-4">
+                        <span className="text-left">
+                            <div className="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
+                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
+                                    <i className="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>                        
+                        </span>
+                    </div>
+                 </div> 
+           
         );
     }
 }
@@ -294,28 +322,39 @@ class DataTable extends React.Component{
     }
 
     render(){
+        let recodes = this.props.recodes.map((x,i)=>{
+                       return ( 
+                             <CSSTransition
+                                key={i}
+                                classNames="fade"
+                                timeout={{ enter: 500, exit: 300 }}>
+                                 <Recode  recode={x} />
+                              </CSSTransition>
+                       )
+        });
+         
         return (
             <div className="container">
-                <table className="table table-hover " >
-                    <thead className="thead-inverse">
-                        <tr className="row">
-                            <th  className="col-2">date</th>
-                            <th  className="col-8 text-left">item</th>
-                            <th  className="col-2 text-left">operation</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {       
-                         this.props.recodes.map((x,i)=>{
-                            return  <Recode key={i} recode={x} />
-                         })  
-                    }
-                    </tbody>
-                </table>
-            </div>
+                <div className="row">
+                    <div className="col-xs-2">
+                        <span>date</span>
+                    </div>
+                    <div className="col-xs-6">
+                        <span>item</span>
+                    </div>
+                    <div className="col-xs-4">
+                        <span>operation</span>
+                    </div>
+                </div>
+                <TransitionGroup component="div" className="row">
+                    {recodes}
+                </TransitionGroup>
+             </div> 
         );
     }    
 }
+
+
 
 export default class Component extends React.Component {
     constructor(props) {
@@ -328,19 +367,19 @@ export default class Component extends React.Component {
         
     }
     render(){
+        let navbarBody = <Modalwindow body={<Form/>} />
+        let inv = false;
+        setInterval(() => {
+            inv = !inv;
+        }, 5000)
         return (
+            
             <div>
-                <Navbar title="Lerning Recorder" btn={<Modalwindow body={<Form/>}/>}/>
+                <Navbar title="Lerning Recorder" body={navbarBody}/>
                 <DataTable recodes={this.state.recodes}/>
             </div>
         );
     }
-    renderTBody(){            
-        // return store.recodes.map((x,i)=>{
-        return this.state.recodes.map((x,i)=>{
-            return this.renderRecode(x,i);
-        });
-        
-    }
+
 
 }
