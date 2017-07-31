@@ -3,7 +3,8 @@ import ActionCreator from "../action/action.js"
 import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
-import { Modal,Button } from 'react-bootstrap';
+// import { Modal,Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import Transition from 'react-transition-group/Transition';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import CSSTransition from  'react-transition-group/CSSTransition';
@@ -32,10 +33,12 @@ class History extends React.Component{
     }
     render(){
         // [TODO] statement below was in constructor. that didn't work as expected need research how counstructor and render work 
-        this.dateString = Util.getDateString(Util.getDate(this.props.date))
+        // this.dateString = Util.getDateString(Util.getDate(this.props.date))
+        let dateString = Util.getDateString(Util.getDate(this.props.date))
+
         return ( 
-            <span onClick={()=>{this.props.onClick(this.dateString)}} className="badge badge-pill badge-default"  >
-                {this.dateString}
+            <span onClick={()=>{this.props.onClick(dateString)}} className="badge badge-pill badge-default" >
+                {dateString}
             </span>
         );
     }
@@ -102,8 +105,14 @@ class HistoryInput extends React.Component {
 };
 
 
-
-
+class Test extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    render(){
+        return <div></div> 
+    }
+}
 
 class Navbar extends React.Component{
     constructor(props) {
@@ -147,7 +156,9 @@ class Form extends React.Component {
         if ( this.state.history.indexOf(history) >= 0){
             alert(history + " is already exist.");
         }else{
-            let newHist = this.state.history.concat(history).sort();
+            //[TODO] sort looks wired when history deleted 
+            // let newHist = this.state.history.concat(history).sort();
+            let newHist = this.state.history.concat(history);
             // console.log(newHist);
             this.setState({ history: newHist });       
         }
@@ -184,13 +195,36 @@ class Form extends React.Component {
             return v.value  !== tag ;
         })});
     }
-    render(){   
+    render(){ 
         let tags = this.state.tags.map((x,i)=>{
-            return <Tag value={x.value} key={i} onClick={this._deleteTag}/>;
-        }); 
+            return ( 
+                    <CSSTransition
+                        key={i}
+                        classNames="fade"
+                        timeout={{ enter: 500, exit: 300 }}
+                    >
+                         <Tag value={x.value} onClick={this._deleteTag}/> 
+                    </CSSTransition>
+            );
+        });
+
+
         let history = this.state.history.map((x,i)=>{
-            return  <History date={x} key={i} onClick={this._deleteHistory}/>;
+            console.log("dateString:",x,i);
+            return (
+                    <CSSTransition
+                        key={i}
+                        classNames="fade"
+                        timeout={{ enter: 500, exit: 300 }}
+                    >
+                     <History date={x} onClick={this._deleteHistory}/>    
+                    </CSSTransition>
+            );
         }); 
+
+
+        
+
         // console.log(history);
         return (
             <form onSubmit={this._handleSubmit} >
@@ -200,13 +234,17 @@ class Form extends React.Component {
                 </div>
                 <div className='form-group'>
                    <label>History</label>
-                    <HistoryInput onClick={this._addHistory}/>
-                  <div>{history}</div>
+                　　<HistoryInput onClick={this._addHistory}/>
+                      <TransitionGroup component="div" >
+                     {history} 
+                    </TransitionGroup>  
                 </div>
                 <div className='form-group'>
                     <label>Tags</label>
                     <TagInput onClick={this._addTag}/>
-                    <div>{tags}</div>
+                    <TransitionGroup component="div" >
+                      {tags}  
+                    </TransitionGroup>  
                 </div>
                 <div className='form-group'>
                     <input type="submit" className="btn btn-default"  value="Save" />
@@ -222,7 +260,7 @@ class DateFilter extends React.Component{
         super(props);
     }
     render(){
-
+        //[TODO] inplement filter componect for datatable
     }
 }
 
@@ -231,10 +269,9 @@ class TagFilter extends React.Component{
         super(props);
     }
     render(){
-
+        //[TODO] inplement filter componect for datatable
     }
 }
-
 
 class Modalwindow extends React.Component{
     constructor(props){
@@ -259,11 +296,12 @@ class Modalwindow extends React.Component{
     render(){
         return (
             <button type="button" onClick={(e)=>{
-                action.setForm({});
-                this._openModal();
-             
+                    action.setForm({});
+                    this._openModal();  
                 }
-            }  className="btn btn-default navbar-btn pull-right" >
+            }  
+             className="btn btn-default navbar-btn pull-right" 
+            >
                 <i className="fa fa-plus" aria-hidden="true" >
                     <Modal show={this.state.isModal} onHide={this._closeModal}>
                         <Modal.Header closeButton>
@@ -292,27 +330,19 @@ class Recode extends React.Component{
         let date = Util.getDate(recode.history[recode.history.length - 1]);
         let dateString = Util.getDateString(date);
         return ( 
-                 <div className="row"> 
-                    <div className="col-xs-2">
-                        <span>{dateString}</span>
-                    </div>
-                    <div className="col-xs-6">
-                        <span>{recode.value}</span>
-                    </div>
-                    <div className="col-xs-4">
-                        <span className="text-left">
-                            <div className="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
-                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" className="btn btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
-                                    <i className="fa fa-times" aria-hidden="true"></i>
-                                </button>
-                            </div>                        
-                        </span>
-                    </div>
-                 </div> 
-           
+            <tr> 
+                <th scope="row">
+                    <button type="button" className="btn btn-line btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
+                        <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </button>
+                </th>
+                <td>{recode.value}</td>
+                <td>
+                    <button type="button" className="btn btn-line btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
+                        <i className="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>            
         );
     }
 }
@@ -323,33 +353,32 @@ class DataTable extends React.Component{
 
     render(){
         let recodes = this.props.recodes.map((x,i)=>{
-                       return ( 
-                             <CSSTransition
-                                key={i}
-                                classNames="fade"
-                                timeout={{ enter: 500, exit: 300 }}>
-                                 <Recode  recode={x} />
-                              </CSSTransition>
-                       )
+            return ( 
+                <CSSTransition
+                    key={i}
+                    classNames="fade"
+                    timeout={{ enter: 500, exit: 300 }}
+                >
+                    <Recode  recode={x} />
+                </CSSTransition>
+            )
         });
          
         return (
-            <div className="container">
-                <div className="row">
-                    <div className="col-xs-2">
-                        <span>date</span>
-                    </div>
-                    <div className="col-xs-6">
-                        <span>item</span>
-                    </div>
-                    <div className="col-xs-4">
-                        <span>operation</span>
-                    </div>
-                </div>
-                <TransitionGroup component="div" className="row">
+            <div className="well">
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th className="col-xs-1" >#</th>
+                        <th className="col-xs-10" >subject</th>
+                        <th className="col-xs-1" >op</th>
+                    </tr>
+                </thead>
+                <TransitionGroup component="tbody" >
                     {recodes}
                 </TransitionGroup>
-             </div> 
+             </table> 
+             </div>
         );
     }    
 }
@@ -368,15 +397,12 @@ export default class Component extends React.Component {
     }
     render(){
         let navbarBody = <Modalwindow body={<Form/>} />
-        let inv = false;
-        setInterval(() => {
-            inv = !inv;
-        }, 5000)
+
         return (
             
             <div>
                 <Navbar title="Lerning Recorder" body={navbarBody}/>
-                <DataTable recodes={this.state.recodes}/>
+                <DataTable recodes={this.state.recodes} className="recode-card col-xs-4"/>
             </div>
         );
     }

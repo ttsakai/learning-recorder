@@ -116,14 +116,29 @@ input {
 
 .btn{
   font-family: FontAwesome;
-  color:#F5F5F5;
-  background: #616161;
+   color:#F5F5F5; 
+   background: #616161;  
+   
+
 }
 .btn:not( :hover ){   
   font-family: FontAwesome;
-  color:#F5F5F5;
-  background: #616161;
+  color:#F5F5F5; 
+  background: #616161;  
 }
+
+.btn-line{
+  font-family: FontAwesome;
+   color:#616161; 
+   background: rgb(227,227,227);  
+   border:none
+}
+.btn-line:not( :hover ){   
+  color:#616161; 
+  background: rgb(227,227,227);  
+  
+}
+
 
 .btn:focus {
   outline: none;
