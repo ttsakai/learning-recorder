@@ -108,12 +108,6 @@ input {
 }
 */
 
-.text-food-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .btn{
   font-family: FontAwesome;
    color:#F5F5F5; 
@@ -144,12 +138,6 @@ input {
   outline: none;
 }
 
-.food-name-col{
-  max-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow:ellipsis;
-}
 
 table td[class*=col-], table th[class*=col-] {
     position: static;
@@ -161,10 +149,6 @@ table td[class*=col-], table th[class*=col-] {
   text-align:right;
 }
 
-.amount-input{
-  width:100%;
-  text-align:right;
-}
 
 
 .fade-enter {
@@ -181,6 +165,23 @@ table td[class*=col-], table th[class*=col-] {
 }
 
 .fade-exit.fade-exit-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
+  /* opacity: 0.01; */
+  transition: opacity 500ms ease-in; 
+ 
+}
+tr div {
+   max-height: 20px; 
+}
+
+tr.false div {
+  max-height: 0;
+  overflow: hidden; 
+  transition: max-height 0.5s;
+}
+
+tr.false th,tr.false td{
+  border-top:0 !important; 
+  padding-top:0  !important;
+  padding-bottom:0  !important;
+  transition: border-top 1s,padding-top 0.5s,padding-b 0.5s;
 }

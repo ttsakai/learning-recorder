@@ -146,6 +146,7 @@ class Form extends React.Component {
     }
     _handleSubmit(e) {
         e.preventDefault();
+        console.log("action.saveRecode");
         action.saveRecode(this.state);
     }
     _handleChange(e){
@@ -210,7 +211,6 @@ class Form extends React.Component {
 
 
         let history = this.state.history.map((x,i)=>{
-            console.log("dateString:",x,i);
             return (
                     <CSSTransition
                         key={i}
@@ -222,10 +222,6 @@ class Form extends React.Component {
             );
         }); 
 
-
-        
-
-        // console.log(history);
         return (
             <form onSubmit={this._handleSubmit} >
                 <div className='form-group'>
@@ -319,48 +315,101 @@ class Modalwindow extends React.Component{
     }
 }
 
-
 class Recode extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            isLive : true,
+            isVisible :true
+        };
+        this._handleClickDelete = this._handleClickDelete.bind(this);
+        this._handleClickEdit = this._handleClickEdit.bind(this);
 
     }
+    _handleClickDelete(){
+        this.setState({isVisible : false},()=>{ 
+            setTimeout(()=>{
+                console.log("send delete",this.props.recode);
+                action.deleteRecode(this.props.recode);
+            },500);
+            
+               
+        });
+    }
+    _handleClickEdit (){
+        action.setForm(this.props.recode)
+    }
     render(){
-        let recode = this.props.recode;
-        let date = Util.getDate(recode.history[recode.history.length - 1]);
-        let dateString = Util.getDateString(date);
-        return ( 
-            <tr> 
-                <th scope="row">
-                    <button type="button" className="btn btn-line btn-primary btn-sm" onClick={()=>{action.setForm(recode)}}>
-                        <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    </button>
-                </th>
-                <td>{recode.value}</td>
-                <td>
-                    <button type="button" className="btn btn-line btn-primary btn-sm" onClick={()=>{action.deleteRecode(recode)}}>
-                        <i className="fa fa-times" aria-hidden="true"></i>
-                    </button>
-                </td>
-            </tr>            
-        );
+        console.log("Recode:render start");
+        // if ( this.state.isLive){
+            let recode = this.props.recode;
+            let date = Util.getDate(recode.history[recode.history.length - 1]);
+            let dateString = Util.getDateString(date);
+            console.log("Recode:",this.props.key,this.state.isVisible,this.props.recode);
+            return  (
+                <CSSTransition 
+                    in={this.state.isVisible}
+                    onExited={()=>{
+                          this.setState({isLive:false});  
+                    }}
+                    timeout={500}
+                    classNames="fade"
+                >  
+                    <tr className={this.state.isVisible ?  '' : 'false'}> 
+                        <th scope="row">
+                            <div>
+                                <button type="button" onClick={this._handleClickEdit} className="btn btn-line btn-primary btn-sm" >
+                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </th>
+                        <td>
+                            <div>
+                                {recode.value}
+                            </div>    
+                        </td>
+                        <td>
+                            <div>
+                                <button type="button" onClick={this._handleClickDelete} className="btn btn-line btn-primary btn-sm" >
+                                    <i className="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                 </CSSTransition> 
+            ); 
+        // }else{
+        //     return null
+        // }
     }
 }
-class DataTable extends React.Component{
-    constructor(props){
-        super(props);
-    }
 
+class DataTable extends React.Component{
+    //[TODO] render recodes twice when delete event fired.
+    //first is from Recode component.
+    //second is triggered by change event from store.
+    //who should be responseble for store change? 
+    constructor(props){
+        super(props); 
+        this.state = {isRecodesUptoDate:true}
+        store.on("CHANGE",(err)=>{
+            this.setState({isRecodesUptoDate:true});
+        });
+    }
     render(){
-        let recodes = this.props.recodes.map((x,i)=>{
+        console.log("DataTable:render start");
+        // let test = Object.assign([],store.recodes);
+        // console.log(test);
+        // object is passed as a reference. but it is not a problem
+        //[TODO] test it's ok to locate in constructor or not 
+        let recodes = store.recodes.sort((x,y)=>{
+        // let recodes = test.sort((x,y)=>{
+            return  x.value >= y.value ;
+        }).map((x,i)=>{
             return ( 
-                <CSSTransition
-                    key={i}
-                    classNames="fade"
-                    timeout={{ enter: 500, exit: 300 }}
-                >
-                    <Recode  recode={x} />
-                </CSSTransition>
+                // key have to correspond with data. i is not, 
+                // <Recode  recode={x} key={i} />
+                <Recode  recode={x} key={x._id} />
             )
         });
          
@@ -374,7 +423,7 @@ class DataTable extends React.Component{
                         <th className="col-xs-1" >op</th>
                     </tr>
                 </thead>
-                <TransitionGroup component="tbody" >
+                 <TransitionGroup component="tbody" >
                     {recodes}
                 </TransitionGroup>
              </table> 
@@ -384,16 +433,9 @@ class DataTable extends React.Component{
 }
 
 
-
 export default class Component extends React.Component {
     constructor(props) {
-        super(props);
-
-        this.state = {recodes:store.recodes};
-        store.on("CHANGE",(err)=>{
-            this.setState({recodes:store.recodes});
-        });
-        
+        super(props);        
     }
     render(){
         let navbarBody = <Modalwindow body={<Form/>} />
@@ -402,7 +444,7 @@ export default class Component extends React.Component {
             
             <div>
                 <Navbar title="Lerning Recorder" body={navbarBody}/>
-                <DataTable recodes={this.state.recodes} className="recode-card col-xs-4"/>
+                <DataTable  className="recode-card col-xs-4"/>
             </div>
         );
     }

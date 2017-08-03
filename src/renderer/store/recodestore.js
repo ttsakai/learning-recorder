@@ -31,6 +31,10 @@ export default class Store extends Emitter {
         this.emit("CHANGE");
 
     }    
+    onDeleteRecodes(recodes){
+        this.recodes = recodes;
+
+    }    
     onSetForm(recode){
         if ( JSON.stringify(recode) === JSON.stringify({})){
             this.formData = this._getBaseRecode();
