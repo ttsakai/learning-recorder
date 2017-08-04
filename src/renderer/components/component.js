@@ -104,16 +104,6 @@ class HistoryInput extends React.Component {
      }   
 };
 
-
-class Test extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        return <div></div> 
-    }
-}
-
 class Navbar extends React.Component{
     constructor(props) {
         super(props);
@@ -146,7 +136,7 @@ class Form extends React.Component {
     }
     _handleSubmit(e) {
         e.preventDefault();
-        console.log("action.saveRecode");
+        // console.log("action.saveRecode");
         action.saveRecode(this.state);
     }
     _handleChange(e){
@@ -250,6 +240,36 @@ class Form extends React.Component {
         );
     }
 };
+class SubjectFilter extends React.Component{
+    constructor(props){
+        super(props);
+        this.state ={
+            value:"",
+            isApply:false
+        }
+        this._handleChange = this._handleChange.bind(this);
+        this._handleApply= this._handleApply.bind(this);
+    }
+    _handleChange(e){
+        e.preventDefault();
+        this.setState({value:e.target.value});
+    }
+    _handleApply(e){
+        e.preventDefault();
+        this.props.onClick("subject",this.state.value);
+    }
+    render(){
+         return (
+            <div className="input-group">
+                <input type="text" value={this.state.value} onChange={this._handleChange} className="form-control" />
+                <span className="input-group-btn">
+                    <button onClick={this._handleApply} className="btn btn-secondary" >Apply</button>
+                </span>
+            </div>
+
+        );       
+    }
+}
 
 class DateFilter extends React.Component{
     constructor(props){
@@ -329,7 +349,7 @@ class Recode extends React.Component{
     _handleClickDelete(){
         this.setState({isVisible : false},()=>{ 
             setTimeout(()=>{
-                console.log("send delete",this.props.recode);
+                // console.log("send delete",this.props.recode);
                 action.deleteRecode(this.props.recode);
             },500);
             
@@ -340,17 +360,17 @@ class Recode extends React.Component{
         action.setForm(this.props.recode)
     }
     render(){
-        console.log("Recode:render start");
-        // if ( this.state.isLive){
-            let recode = this.props.recode;
-            let date = Util.getDate(recode.history[recode.history.length - 1]);
-            let dateString = Util.getDateString(date);
-            console.log("Recode:",this.props.key,this.state.isVisible,this.props.recode);
+        console.log("Recode:render start": recode);
+        
+        let recode = this.props.recode;
+        // let date = Util.getDate(recode.history[recode.history.length - 1]);
+        // let dateString = Util.getDateString(date);
+        if ( recode !== null) {
             return  (
                 <CSSTransition 
                     in={this.state.isVisible}
                     onExited={()=>{
-                          this.setState({isLive:false});  
+                            this.setState({isLive:false});  
                     }}
                     timeout={500}
                     classNames="fade"
@@ -376,11 +396,11 @@ class Recode extends React.Component{
                             </div>
                         </td>
                     </tr>
-                 </CSSTransition> 
+                </CSSTransition> 
             ); 
-        // }else{
-        //     return null
-        // }
+        }else {
+            return null;
+        }
     }
 }
 
@@ -391,30 +411,51 @@ class DataTable extends React.Component{
     //who should be responseble for store change? 
     constructor(props){
         super(props); 
-        this.state = {isRecodesUptoDate:true}
+        
+        this.state = {
+            isRecodesUptoDate:true,
+            filter:{
+                type:"none",
+                value:""
+            }
+        }
+
+        this._handleFilter = this._handleFilter.bind(this);
+
         store.on("CHANGE",(err)=>{
             this.setState({isRecodesUptoDate:true});
         });
     }
+    _handleFilter(type,value){
+        this.setState({filter:{type:type,value:value}});
+    }
     render(){
-        console.log("DataTable:render start");
+        // console.log("DataTable:render start");
         // let test = Object.assign([],store.recodes);
         // console.log(test);
         // object is passed as a reference. but it is not a problem
-        //[TODO] test it's ok to locate in constructor or not 
+        //[TODO] test it's ok to locate in constructor or not
+
         let recodes = store.recodes.sort((x,y)=>{
-        // let recodes = test.sort((x,y)=>{
             return  x.value >= y.value ;
-        }).map((x,i)=>{
-            return ( 
-                // key have to correspond with data. i is not, 
-                // <Recode  recode={x} key={i} />
-                <Recode  recode={x} key={x._id} />
+         }).map((x,i)=>{
+
+            let data = x; 
+            if (  this.state.filter.type ==="subject" &&  x.value.match(this.state.filter.value) === null ){
+                data = null;
+                console.log("In")
+            }
+            return (  
+                <Recode recode={data} key={x._id} />
             )
+
         });
-         
+
+        console.log("DataTable:render ",recodes);
+        
         return (
             <div className="well">
+            <SubjectFilter onClick={this._handleFilter}/>
             <table className="table">
                 <thead>
                     <tr>

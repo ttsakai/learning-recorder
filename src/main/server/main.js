@@ -85,7 +85,7 @@ ipcMain.on('mdb-insert',(e,arg)=>{
 
 ipcMain.on('mdb-upsert',(e,arg)=>{
   db.upsert(arg,(err)=>{
-    console.log(err);   
+    // console.log(err);   
     e.returnValue = 'OK';
   });
 });
