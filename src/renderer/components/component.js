@@ -9,6 +9,10 @@ import Transition from 'react-transition-group/Transition';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import CSSTransition from  'react-transition-group/CSSTransition';
 
+import Icon from './icon.js';
+import Sidebar from './sidebar.js';
+import Navbar from './navbar.js';
+
 let dispatcher = new EventEmitter();
 let action = new ActionCreator(dispatcher);
 let store = new RecodeStore(dispatcher);
@@ -19,9 +23,9 @@ class Tag extends React.Component{
     }
     render(){
         return ( 
-            <span  onClick={()=>{this.props.onClick(this.props.value)}}  className="badge badge-default" >
-                <i aria-hidden="true" className="fa fa-tag" ></i>
-                {" " + this.props.value}
+            <span onClick={()=>{this.props.onClick(this.props.value)}}  className="badge badge-default" >
+                <Icon type="tag"/> 
+                 {" " + this.props.value} 
             </span>
         );
     }
@@ -104,21 +108,6 @@ class HistoryInput extends React.Component {
      }   
 };
 
-class Navbar extends React.Component{
-    constructor(props) {
-        super(props);
-    }
-    render(){
-        return (
-            <nav className="navbar navbar-default navbar-static-top">
-                <div className="navbar-header pull-left">
-                    <a className="navbar-brand" href="#">{this.props.title}</a>
-                </div>
-                {this.props.body}
-            </nav>
-        )   
-    }
-}
 
 
 class Form extends React.Component {
@@ -318,7 +307,8 @@ class Modalwindow extends React.Component{
             }  
              className="btn btn-default navbar-btn pull-right" 
             >
-                <i className="fa fa-plus" aria-hidden="true" >
+                {/* <i className="fa fa-plus" aria-hidden="true" > */}
+                <Icon type="plus">
                     <Modal show={this.state.isModal} onHide={this._closeModal}>
                         <Modal.Header closeButton>
                             <Modal.Title></Modal.Title>
@@ -328,7 +318,7 @@ class Modalwindow extends React.Component{
                         </Modal.Body>
                         <Modal.Footer></Modal.Footer>
                     </Modal>
-                </i>
+                </Icon>
             </button>
 
         );
@@ -379,7 +369,7 @@ class Recode extends React.Component{
                         <th scope="row">
                             <div>
                                 <button type="button" onClick={this._handleClickEdit} className="btn btn-line btn-primary btn-sm" >
-                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    <Icon type="edit"/>
                                 </button>
                             </div>
                         </th>
@@ -391,7 +381,7 @@ class Recode extends React.Component{
                         <td>
                             <div>
                                 <button type="button" onClick={this._handleClickDelete} className="btn btn-line btn-primary btn-sm" >
-                                    <i className="fa fa-times" aria-hidden="true"></i>
+                                    <Icon type="delete"/>
                                 </button>
                             </div>
                         </td>
@@ -443,7 +433,6 @@ class DataTable extends React.Component{
             let data = x; 
             if (  this.state.filter.type ==="subject" &&  x.value.match(this.state.filter.value) === null ){
                 data = null;
-                console.log("In")
             }
             return (  
                 <Recode recode={data} key={x._id} />
@@ -476,16 +465,26 @@ class DataTable extends React.Component{
 
 export default class Component extends React.Component {
     constructor(props) {
-        super(props);        
+        super(props);  
+        this.state = {isSbVisible:true};   
+        this.sbStateChenge = this.sbStateChenge.bind(this);
+    }
+    sbStateChenge(){
+        this.setState((state)=>{
+            return {isSbVisible:!state.isSbVisible}
+        });
     }
     render(){
         let navbarBody = <Modalwindow body={<Form/>} />
 
         return (
             
-            <div>
-                <Navbar title="Lerning Recorder" body={navbarBody}/>
-                <DataTable  className="recode-card col-xs-4"/>
+            <div className="container">
+                <Navbar title="Lerning Recorder" body={navbarBody} onClick={this.sbStateChenge}/>
+                <div className="row">
+                    <Sidebar isVisible={this.state.isSbVisible}/>
+                    <DataTable  className="recode-card col-xs-4"/>
+                </div>
             </div>
         );
     }

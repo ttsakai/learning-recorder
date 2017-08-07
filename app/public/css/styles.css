@@ -185,3 +185,8 @@ tr.false th,tr.false td{
   padding-bottom:0  !important;
   transition: border-top 1s,padding-top 0.5s,padding-b 0.5s;
 }
+
+.navbar{
+    background-color: rgb(97, 97, 97);
+    color:#FFF;    
+}
