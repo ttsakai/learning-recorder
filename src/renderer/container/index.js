@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Component from '../components/Component.js';
 // const {remote} = require('electron')
 import {remote} from 'electron';
+// import '../../css/styles.css';
 
 const {Menu, MenuItem} = remote;
 
@@ -26,6 +27,7 @@ window.addEventListener('contextmenu', (e) => {
 
 window.onload = ()=>{
   ReactDOM.render(<Component />, document.getElementById('app'));
+
 }
 
 

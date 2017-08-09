@@ -30,6 +30,13 @@ export default class Icon extends React.Component{
                      color:"#FFF"  
                 }
                 break;
+            case "calendar":
+                classNames = "fa fa-calendar"
+                styles ={
+                    fontSize: "20px",
+                     color:"#FFF"  
+                }
+                break;
             case "graph":
                 classNames  = "fa fa-line-chart";
                 styles ={
@@ -39,10 +46,15 @@ export default class Icon extends React.Component{
                 break;
             case "plus":
                 classNames  = "fa fa-plus"
+                styles ={
+                    fontSize: "20px",
+                    color:"#FFF"  
+                }
                 break;
             case "edit":
                 classNames = "fa fa-pencil-square-o"
                 break;
+
             case "delete":
                 classNames = "fa fa-times"
                 break;
@@ -52,7 +64,7 @@ export default class Icon extends React.Component{
         // console.log(this.props)
 
         return ( 
-            <i  style={styles} className={classNames} aria-hidden="true" >
+            <i  style={styles} className={classNames} aria-hidden="true" onClick={this.props.onClick || ""} >
                 {this.props.children || ""}
             </i>
             

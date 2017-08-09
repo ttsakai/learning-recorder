@@ -27,7 +27,12 @@ module.exports = {
           query: {
             presets: ['babel-preset-es2015' ,'react']
           }
-        }
+        },
+        {
+        test: /\.css$/,
+        loader: "style-loader!css-loader",
+        // loaders: ['css-loader?modules'],
+        },
       ]
     },
     devServer: {

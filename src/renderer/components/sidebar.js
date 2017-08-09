@@ -31,23 +31,18 @@ export default class Sidebar extends React.Component {
 
         }
 
-
-        // this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
     }
     componentWillReceiveProps(nextProps)
     {  
-        // console.log("nextProps:",nextProps);
         this.setState ({isVisible : nextProps.isVisible}); 
     }
 
     render(){
-        // let styles = Object.assign({},this.styles);
-
+    
         let sidebarStyle = Object.assign({},this.styles.sidebar);
         this.styles.sidebar = sidebarStyle;
         if ( this.state.isVisible === true){
             this.styles.sidebar.left = "0px";
-            // console.log("true!",styles)
         }else{
             this.styles.sidebar.left = "-" + this.styles.sidebar.width;
         }
@@ -57,13 +52,19 @@ export default class Sidebar extends React.Component {
                 <ul className="list-group">
                      <li className="list-group-item" style={this.styles.item}> 
                         <span style={this.styles.icon}>
-                            <Icon type="panel"/>
+                            <Icon type="panel" onClick={this.props.onClick1}/>
                         </span>
                         Panel    
                     </li>
                      <li className="list-group-item" style={this.styles.item}>                     
-                        <span style={this.styles.icon}>
-                            <Icon type="graph"/>      
+                        <span style={this.styles.icon} >
+                            <Icon type="calendar" onClick={this.props.onClick2} />      
+                        </span>
+                        Calendar
+                    </li>
+                     <li className="list-group-item" style={this.styles.item}>                     
+                        <span style={this.styles.icon} >
+                            <Icon type="graph" onClick={this.props.onClick3} />      
                         </span>
                         Graph
                     </li>
