@@ -1,6 +1,7 @@
 import React from "react";
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
+import Util from '../../common/util.js';
 
 
 export default class Calendar extends React.Component{
@@ -13,10 +14,16 @@ export default class Calendar extends React.Component{
             display:"block",
         }
 
+        this.onSelectDate = this.onSelectDate.bind(this);
     }
     componentWillReceiveProps(nextProps)
     {  
         this.setState({isVisible : nextProps.isVisible}); 
+    }
+    onSelectDate(date){
+        let tes = Util.getDateString(date);
+        alert(tes,date);
+        
     }
     render(){
         let style = Object.assign({},this.style);
@@ -28,9 +35,9 @@ export default class Calendar extends React.Component{
         }
 
 
-        var today = new Date();
-        console.log(today);
-        var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+        let today = new Date();
+        // console.log(today);
+        let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
         return (
             <div className="well" style={this.style}>
@@ -57,11 +64,10 @@ export default class Calendar extends React.Component{
                     todayColor: '#FFA726',
                     weekdayColor: 'rgb(50, 50, 50)',
                 }}
+                onSelect={this.onSelectDate}
                 selected={today}
-                disabledDays={[0,6]}
                 minDate={lastWeek}
             />  
-            {/* <div></div> */}
             </div> 
             
         ) ;

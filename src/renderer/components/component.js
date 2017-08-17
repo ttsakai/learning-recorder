@@ -123,22 +123,17 @@ class Recode extends React.Component{
     _handleClickDelete(){
         this.setState({isVisible : false},()=>{ 
             setTimeout(()=>{
-                // console.log("send delete",this.props.recode);
                 action.deleteRecode(this.props.recode);
             },500);
-            
-               
         });
     }
     _handleClickEdit (){
         action.setForm(this.props.recode)
     }
     render(){
-        // console.log("Recode:render start:", recode);
         
         let recode = this.props.recode;
-        // let date = Util.getDate(recode.history[recode.history.length - 1]);
-        // let dateString = Util.getDateString(date);
+
         if ( recode !== null) {
             return  (
                 <CSSTransition 
@@ -280,36 +275,32 @@ export default class Component extends React.Component {
         this.graphStateChange = this.graphStateChange.bind(this);
     }
     sbStateChenge(){
-        this.setState((state)=>{
-            return {isSbVisible:!state.isSbVisible}
+        // this.setState((state)=>{
+        //     return {isSbVisible:!state.isSbVisible}
+        // });
+        this.setState({
+            isSbVisible:!this.state.isSbVisible
         });
     }
     panelStateChange(){
-        this.setState((state)=>{
-            return {
-                isPanelVisible:true,
-                isCalendarVisible:false,
-                isGraphVisible:false
-            }
+        this.setState({
+            isPanelVisible:true,
+            isCalendarVisible:false,
+            isGraphVisible:false
         });
     }
     calendarStateChange(){
-        this.setState((state)=>{
-            return {
-                isPanelVisible:false,
-                isCalendarVisible:true,
-                isGraphVisible:false
-
-            }
+        this.setState({
+            isPanelVisible:false,
+            isCalendarVisible:true,
+            isGraphVisible:false
         });
     }
     graphStateChange(){
-        this.setState((state)=>{
-            return {
-                isPanelVisible:false,
-                isCalendarVisible:false,                
-                isGraphVisible:true
-            }
+        this.setState({
+            isPanelVisible:false,
+            isCalendarVisible:false,                
+            isGraphVisible:true
         });
     }
     render(){
@@ -317,34 +308,33 @@ export default class Component extends React.Component {
 
         return (
             <div className="container">
-                <Navbar title="Lerning Recorder" body={navbarBody} onClick={this.sbStateChenge}/>
-                 <div className="row"> 
-                 {/* <TransitionGroup component="div"  className="row"> */}
-                
+                <Navbar title="Lerning Recorder" 
+                        body={navbarBody} 
+                        onClick={this.sbStateChenge}
+                />
+                <div className="row">                 
                     <Sidebar   isVisible={this.state.isSbVisible} 
                                onClick1={this.panelStateChange} 
                                onClick2={this.calendarStateChange} 
                                onClick3={this.graphStateChange} 
                     />
-                    <CSSTransition 
-                        in={this.state.isPanelVisible}
-                        timeout={500}
-                        classNames="fade"
+                    <CSSTransition in={this.state.isPanelVisible}
+                                   timeout={500}
+                                   classNames="fade"
                     >
                         <DataTable isVisible={this.state.isPanelVisible} /> 
                     </CSSTransition>
-
-                    <CSSTransition 
-                        in={this.state.isCalendarVisible}
-                        timeout={500}
-                        classNames="fade"
+                    <CSSTransition in={this.state.isCalendarVisible}
+                                   timeout={500}
+                                   classNames="fade"
                     >
-                        <Calendar  isVisible={this.state.isCalendarVisible} />  
+                        <Calendar action={action} 
+                                  store={store} 
+                                  isVisible={this.state.isCalendarVisible}
+                        />  
                     </CSSTransition>              
-                    {/* <Graph     isVisible={this.state.isGraphVisible} />   */}
                     
                  </div> 
-                {/* </TransitionGroup> */}
             </div>
         );
     }

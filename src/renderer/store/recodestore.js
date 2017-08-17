@@ -12,7 +12,6 @@ export default class Store extends Emitter {
         // dispatcher.on("deleteRecode", this.onDeleteRecode.bind(this));
         dispatcher.on("saveRecode", this.onChangeRecodes.bind(this));
         dispatcher.on("deleteRecode", this.onChangeRecodes.bind(this));
-     
         dispatcher.on("setForm", this.onSetForm.bind(this));
      
     }
