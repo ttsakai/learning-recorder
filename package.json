@@ -21,6 +21,7 @@
     "fs": "0.0.1-security",
     "json-loader": "^0.5.4",
     "nedb": "^1.8.0",
+    "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-infinite-calendar": "^2.3.1",

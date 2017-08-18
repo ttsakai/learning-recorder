@@ -1,20 +1,12 @@
 'use strict';
 
-// const  {ipcMain,app, BrowserWindow} = require('electron');
 import  {ipcMain,app, BrowserWindow} from 'electron';
-
-// const path  = require( 'path');
 import path from 'path';
-
-// const url = require( 'url');
-// const Datastore  = require('nedb');
 import url  from 'url';
 import Datastore  from 'nedb';
-import Dbaccess from '../../common/dbaccess.js';
+import Dbaccess from './dbaccess.js';
 
 let db = new Dbaccess( './master.db');
-let tdb = new Dbaccess( './tag.db');
-
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -28,6 +20,7 @@ function createWindow () {
   //[TODO] __dirname は予約変数的な奴
   //　loadURLのラッパー作ってルーティングさせたほうがいいかもしれない。
   // slashesってなに？
+
   win.loadURL(url.format({
     pathname: path.join(__dirname, '/../public/index.html'),
     protocol: 'file:',

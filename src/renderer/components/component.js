@@ -3,7 +3,7 @@ import ActionCreator from "../action/action.js"
 import RecodeStore from "../store/recodestore.js"
 import EventEmitter from "../dispatcher/eventemiter.js"
 import Util from '../../common/util.js'
-// import { Modal,Button } from 'react-bootstrap';
+
 import { Modal } from 'react-bootstrap';
 import Transition from 'react-transition-group/Transition';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
@@ -14,6 +14,7 @@ import Sidebar from './sidebar.js';
 import Navbar from './navbar.js';
 import Form from './form.js';
 import Calendar from './calendar.js';
+import Recode from './recode.js';
 
 let dispatcher = new EventEmitter();
 let action = new ActionCreator(dispatcher);
@@ -26,47 +27,29 @@ class SubjectFilter extends React.Component{
             value:"",
             isApply:false
         }
-        this._handleChange = this._handleChange.bind(this);
-        this._handleApply= this._handleApply.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleApply= this.handleApply.bind(this);
     }
-    _handleChange(e){
+    handleChange(e){
         e.preventDefault();
         this.setState({value:e.target.value});
     }
-    _handleApply(e){
+    handleApply(e){
         e.preventDefault();
         this.props.onClick("subject",this.state.value);
     }
     render(){
-         return (
+        return (
             <div className="input-group">
-                <input type="text" value={this.state.value} onChange={this._handleChange} className="form-control" />
+                <input type="text" value={this.state.value} onChange={this.handleChange} className="form-control" />
                 <span className="input-group-btn">
-                    <button onClick={this._handleApply} className="btn btn-secondary" >Apply</button>
+                    <button onClick={this.handleApply} className="btn btn-secondary" >Apply</button>
                 </span>
             </div>
-
         );       
     }
 }
 
-class DateFilter extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        //[TODO] inplement filter componect for datatable
-    }
-}
-
-class TagFilter extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render(){
-        //[TODO] inplement filter componect for datatable
-    }
-}
 
 class Modalwindow extends React.Component{
     constructor(props){
@@ -78,29 +61,29 @@ class Modalwindow extends React.Component{
             this.setState({isModal:true});
         });
 
-        this._openModal = this._openModal.bind(this);
-        this._closeModal = this._closeModal.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
 
     }
-    _openModal() {
+    openModal() {
         this.setState({isModal:true});
     }
-    _closeModal(){
+    closeModal(){
         this.setState({isModal:false});
     }
     render(){
+
+        const body = this.props.body;
         return (
             <Icon type="plus" onClick={(e)=>{
                 action.setForm({});
-                this._openModal();  
+                this.openModal();  
             }}>
-                <Modal show={this.state.isModal} onHide={this._closeModal}>
+                <Modal show={this.state.isModal} onHide={this.closeModal}>
                     <Modal.Header closeButton>
                         <Modal.Title></Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
-                    {this.props.body} 
-                    </Modal.Body>
+                    <Modal.Body>{body}</Modal.Body>
                     <Modal.Footer></Modal.Footer>
                 </Modal>
             </Icon>
@@ -109,6 +92,7 @@ class Modalwindow extends React.Component{
     }
 }
 
+/*
 class Recode extends React.Component{
     constructor(props){
         super(props);
@@ -118,7 +102,6 @@ class Recode extends React.Component{
         };
         this._handleClickDelete = this._handleClickDelete.bind(this);
         this._handleClickEdit = this._handleClickEdit.bind(this);
-
     }
     _handleClickDelete(){
         this.setState({isVisible : false},()=>{ 
@@ -172,6 +155,7 @@ class Recode extends React.Component{
         }
     }
 }
+*/
 
 class DataTable extends React.Component{
     //[TODO] render recodes twice when delete event fired.
@@ -209,12 +193,6 @@ class DataTable extends React.Component{
         this.setState({filter:{type:type,value:value}});
     }
     render(){
-        // console.log("DataTable:render start");
-        // let test = Object.assign([],store.recodes);
-        // console.log(test);
-        // object is passed as a reference. but it is not a problem
-        //[TODO] test it's ok to locate in constructor or not
-
         let style = Object.assign({},this.style);
         this.style = style;
         if ( this.state.isVisible === true){
@@ -232,7 +210,7 @@ class DataTable extends React.Component{
                 data = null;
             }
             return (  
-                <Recode recode={data} key={x._id} />
+                <Recode recode={data} key={x._id} onClickEdit={action.setForm} onClickDelete={action.deleteRecode}/>
             )
 
         });
@@ -268,11 +246,11 @@ export default class Component extends React.Component {
             isCalendarVisible:false,
             isGraphVisible:false
         };
-           
         this.sbStateChenge = this.sbStateChenge.bind(this);
         this.panelStateChange = this.panelStateChange.bind(this);
         this.calendarStateChange = this.calendarStateChange.bind(this);
         this.graphStateChange = this.graphStateChange.bind(this);
+        action.setRecode();
     }
     sbStateChenge(){
         // this.setState((state)=>{

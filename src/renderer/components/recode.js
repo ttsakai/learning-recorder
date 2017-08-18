@@ -1,5 +1,30 @@
 import React from "react"
 import Icon from './icon.js';
+import PropTypes from 'prop-types';
+import CSSTransition from  'react-transition-group/CSSTransition';
+
+
+class Btn extends React.Component{
+    render(){
+        const cssClass = "btn btn-line btn-primary btn-sm";
+        const onClick = this.props.onClick;
+        const children = this.props.children;
+
+        return(
+            <div>
+                <button type="button" onClick={onClick} className={cssClass} >
+                    {children}
+                </button>
+            </div>
+        ) 
+    }
+}
+
+Btn.propTypes = {
+  onClick: PropTypes.func,
+  children: PropTypes.element,
+
+};
 
 
 export default class Recode extends React.Component {
@@ -9,60 +34,57 @@ export default class Recode extends React.Component {
             isLive : true,
             isVisible :true
         };
-        this._handleClickDelete = this._handleClickDelete.bind(this);
-        this._handleClickEdit = this._handleClickEdit.bind(this);
+        this.handleClickDelete = this.handleClickDelete.bind(this);
+        this.handleClickEdit = this.handleClickEdit.bind(this);
+        this.setIsLiveFalse = this.setIsLiveFalse.bind(this);
 
     }
-    _handleClickDelete(){
+    handleClickDelete(){
         this.setState({isVisible : false},()=>{ 
             setTimeout(()=>{
-                action.deleteRecode(this.props.recode);
+                // action.deleteRecode(this.props.recode);
+                this.props.onClickDelete(this.props.recode);
             },500);       
         });
     }
-    _handleClickEdit (){
-        action.setForm(this.props.recode)
+    handleClickEdit (){
+        this.props.onClickEdit(this.props.recode);
+        // action.setForm(this.props.recode)
+    }
+    setIsLiveFalse(){
+         this.setState({isLive:false});
     }
     render(){
-        
         let recode = this.props.recode;
-        // let date = Util.getDate(recode.history[recode.history.length - 1]);
-        // let dateString = Util.getDateString(date);
-        if ( recode !== null) {
-            return  (
-                <CSSTransition 
-                    in={this.state.isVisible}
-                    onExited={()=>{
-                            this.setState({isLive:false});  
-                    }}
-                    timeout={500}
-                    classNames="fade"
-                >  
-                    <tr className={this.state.isVisible ?  '' : 'false'}> 
-                        <th scope="row">
-                            <div>
-                                <button type="button" onClick={this._handleClickEdit} className="btn btn-line btn-primary btn-sm" >
-                                    <Icon type="edit"/>
-                                </button>
-                            </div>
-                        </th>
-                        <td>
-                            <div>
-                                {recode.value}
-                            </div>    
-                        </td>
-                        <td>
-                            <div>
-                                <button type="button" onClick={this._handleClickDelete} className="btn btn-line btn-primary btn-sm" >
-                                    <Icon type="delete"/>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </CSSTransition> 
-            ); 
-        }else {
-            return null;
-        }
+        return recode ? (
+            <CSSTransition 
+                in={this.state.isVisible}
+                onExited={this.setIsLiveFalse}
+                timeout={500}
+                classNames="fade"
+            >  
+                <tr className={this.state.isVisible ?  '' : 'false'}> 
+                    <th scope="row">
+                        <Btn onClick={this.handleClickEdit} >
+                            <Icon type="edit"/>
+                        </Btn>
+                    </th>
+                    <td>
+                        <div>{recode.value}</div>    
+                    </td>
+                    <td>
+                        <Btn onClick={this.handleClickDelete} >
+                            <Icon type="delete"/>
+                        </Btn>
+                    </td>
+                </tr>
+            </CSSTransition> 
+        ) : null; 
+    
     }
 }
+
+Recode.propTypes = {
+  onClickEdit: PropTypes.func.isRequired,
+  onClickDelete: PropTypes.func.isRequired
+};

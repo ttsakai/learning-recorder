@@ -108,11 +108,12 @@ export default class Form extends React.Component {
         this._deleteTag = this._deleteTag.bind(this);  
         this._addHistory = this._addHistory.bind(this);
         this._deleteHistory = this._deleteHistory.bind(this);
+
     }
     _handleSubmit(e) {
         e.preventDefault();
-        // console.log("action.saveRecode");
         this.action.saveRecode(this.state);
+        //[TODO]clear data and close
     }
     _handleChange(e){
         e.preventDefault();
@@ -122,13 +123,9 @@ export default class Form extends React.Component {
         if ( this.state.history.indexOf(history) >= 0){
             alert(history + " is already exist.");
         }else{
-            //[TODO] sort looks wired when history deleted 
-            // let newHist = this.state.history.concat(history).sort();
             let newHist = this.state.history.concat(history);
-            // console.log(newHist);
             this.setState({ history: newHist });       
         }
-        // console.log(history,typeof history);
     }
     _deleteHistory(history){
         this.setState({history: this.state.history.filter((v)=> { 

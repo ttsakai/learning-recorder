@@ -1,26 +1,38 @@
 'use strict'
+
 const  IpcRenderer = require('electron').ipcRenderer;
 import Util from '../../common/util.js'
+import {DbElectron as db} from './db.js'
 
 export default class ActionCreator {
     constructor(dispatcher) {
         this.dispatcher = dispatcher;
+        this.setRecode = this.setRecode.bind(this);
+        this.saveRecode = this.saveRecode.bind(this);
+        this.deleteRecode = this.deleteRecode.bind(this);
+        this.setForm = this.setForm.bind(this);
     }
-     _getStorageData(arg){
-        return  IpcRenderer.sendSync('mdb-select',arg);        
+    getStorageData(arg){
+        return db.select(arg);
     }
-    saveRecode(data) {
-        console.log("action:saveRecode",data);
-        let val = IpcRenderer.sendSync('mdb-upsert',data);
-        let recodes = this._getStorageData({});     
-        this.dispatcher.emit("saveRecode", recodes);
+    setRecode(){
+        let recodes = db.select({});
+        this.dispatcher.emit("setRecode", recodes);
     }
-    deleteRecode(data) {
-        let val = IpcRenderer.sendSync('mdb-delete',data._id);
-        let recodes = this._getStorageData({});     
-        this.dispatcher.emit("deleteRecode", recodes);
+    saveRecode(data){
+        // console.log(this);
+        let val = db.upsert(data);    
+        this.setRecode();        
+    
+    }
+    deleteRecode(data) { 
+        // console.log(this);
+        
+        let val =db.delete(data._id);
+        this.setRecode();
+
     }
     setForm(data){
-      this.dispatcher.emit("setForm", data);
+        this.dispatcher.emit("setForm", data);
     }
 }
